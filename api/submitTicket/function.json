@@ -1,0 +1,15 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": ["post"],
+      "route": "submitTicket"
+    },
+    {
+      "type": "http",
+      "direction": "out"
+    }
+  ]
+}
