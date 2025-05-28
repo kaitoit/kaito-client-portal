@@ -1,11 +1,21 @@
-html, body, #root {
+/* src/App.css */
+
+/* Reset & base */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+html, body, #root {
+  height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #f0f0f0;
+  overflow-x: hidden;
+}
+
+/* Background video full screen */
 #bg-video {
   position: fixed;
   right: 0;
@@ -13,24 +23,123 @@ html, body, #root {
   min-width: 100%;
   min-height: 100%;
   object-fit: cover;
-  z-index: -2;
-}
-
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
   z-index: -1;
+  filter: brightness(0.35) saturate(1.2);
 }
 
-.app-container {
+/* Container for all page content */
+.page-container {
   position: relative;
-  z-index: 1;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  z-index: 10;
+  max-width: 480px;
+  margin: 5vh auto 10vh;
+  padding: 2.5rem 3rem;
+  background: rgba(30, 30, 30, 0.85);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 0 12px rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  text-align: center;
+}
+
+/* Headers */
+.page-container h1,
+.page-container h2 {
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+  color: #66aaff;
+  letter-spacing: 1.2px;
+  user-select: none;
+}
+
+/* Paragraphs */
+.page-container p {
+  font-size: 1.1rem;
+  margin-bottom: 2.25rem;
+  color: #ccc;
+  user-select: none;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  padding: 14px 0;
+  width: 100%;
+  background: linear-gradient(135deg, #3a86ff, #0057e7);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  box-shadow:
+    0 4px 12px rgba(58, 134, 255, 0.7),
+    0 0 10px rgba(58, 134, 255, 0.6);
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+  user-select: none;
+  outline-offset: 2px;
+}
+
+button:hover,
+button:focus {
+  background: linear-gradient(135deg, #0057e7, #003bb5);
+  box-shadow:
+    0 6px 18px rgba(0, 87, 231, 0.9),
+    0 0 15px rgba(0, 87, 231, 0.85);
+  transform: translateY(-2px);
+  outline: 2px solid #66aaff;
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 8px rgba(0, 87, 231, 0.8);
+}
+
+/* Inputs (if you use any) */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 14px 12px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background: #222;
+  color: #eee;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.7);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+input::placeholder {
+  color: #888;
+}
+
+input:focus {
+  background: #333;
+  outline: 2px solid #66aaff;
+  color: white;
+}
+
+/* Footer */
+footer {
+  margin-top: 3rem;
+  font-size: 0.85rem;
+  color: #666;
+  user-select: none;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .page-container {
+    margin: 3vh 1.5rem 6vh;
+    padding: 2rem;
+    max-width: 90vw;
+  }
 }

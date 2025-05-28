@@ -14,7 +14,7 @@ function LoginPage({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-container">
+    <div className="page-container">
       <h1>Kaito IT - Support Page</h1>
       <p>Log in with your Microsoft 365 account</p>
       <button className="login-btn" onClick={handleLogin}>Login with Microsoft</button>
