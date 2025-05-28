@@ -20,6 +20,7 @@ body, html {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   text-align: center;
   border: 2px solid yellow; /* For debugging */
+  z-index:1;	
 }
 
 .login-container h1 {
