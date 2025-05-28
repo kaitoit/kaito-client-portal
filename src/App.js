@@ -55,6 +55,27 @@ function AppRoutes() {
 function App() {
   return (
     <MsalProvider instance={msalInstance}>
+      {/* Background video for all pages */}
+      <video
+        id="bg-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: "fixed",
+          right: 0,
+          bottom: 0,
+          minWidth: "100%",
+          minHeight: "100%",
+          objectFit: "cover",
+          zIndex: -1,
+        }}
+      >
+        <source src="/trees.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
       <AppRoutes />
     </MsalProvider>
   );
