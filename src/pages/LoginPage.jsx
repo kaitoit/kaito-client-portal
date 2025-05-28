@@ -1,44 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/pages/LoginPage.js
+import React from "react";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../authConfig";
 import "./LoginPage.css";
 
 function LoginPage({ onLoginSuccess }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const { instance } = useMsal();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Simple mock validation
-    if (email === "client@example.com" && password === "password") {
-      onLoginSuccess();      // Tell App user is authenticated
-      navigate("/");         // Redirect to dashboard or home
-    } else {
-      alert("Invalid credentials");
-    }
+  const handleLogin = () => {
+    instance.loginRedirect(loginRequest).catch(e => {
+      console.error(e);
+    });
   };
 
   return (
-    <div className="login-page">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Client Portal Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Log In</button>
-      </form>
+    <div className="login-container">
+      <h1>Research Portal</h1>
+      <p>Log in with your Microsoft 365 account</p>
+      <button className="login-btn" onClick={handleLogin}>Login with Microsoft</button>
+      <footer>© 2025 Australian Access Federation</footer>
     </div>
   );
 }
