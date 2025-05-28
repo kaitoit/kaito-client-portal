@@ -15,10 +15,10 @@ function LoginPage({ onLoginSuccess }) {
 
   return (
     <div className="login-container">
-      <h1>Research Portal</h1>
+      <h1>Kaito IT - Support Page </h1>
       <p>Log in with your Microsoft 365 account</p>
       <button className="login-btn" onClick={handleLogin}>Login with Microsoft</button>
-      <footer>© 2025 Australian Access Federation</footer>
+      <footer>© 2025 Kaito IT</footer>
     </div>
   );
 }
