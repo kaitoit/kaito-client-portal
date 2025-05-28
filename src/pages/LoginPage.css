@@ -1,12 +1,10 @@
-/* LoginPage.css */
-
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: #fff;
+  background: #121212;
+  font-family: Arial, sans-serif;
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,75 +13,38 @@ body, html {
 
 .login-container {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 12px;
   padding: 40px 50px;
+  border-radius: 12px;
   max-width: 400px;
   width: 90%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   text-align: center;
-  position: relative;
+  border: 2px solid yellow; /* For debugging */
 }
 
 .login-container h1 {
-  font-weight: 700;
-  font-size: 2.2rem;
   margin-bottom: 1rem;
   color: #aad8ff;
-  letter-spacing: 1.2px;
-  text-shadow: 0 0 5px rgba(170, 216, 255, 0.8);
-}
-
-.login-container p {
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
-  color: #cfd8dc;
-  letter-spacing: 0.5px;
 }
 
 .login-btn {
   width: 100%;
   padding: 15px 0;
   font-size: 1.15rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(90deg, #1a73e8, #0053ba);
+  background-color: #1a73e8;
+  color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 5px 15px rgba(26, 115, 232, 0.6);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-  user-select: none;
 }
 
-.login-btn:hover,
-.login-btn:focus {
-  background: linear-gradient(90deg, #0053ba, #1a73e8);
-  box-shadow: 0 8px 20px rgba(0, 83, 186, 0.8);
-  outline: none;
+.login-btn:hover {
+  background-color: #155ab6;
 }
 
 footer {
   margin-top: 3rem;
   font-size: 0.85rem;
   color: #8aa7bf;
-  letter-spacing: 0.5px;
-}
-
-/* Responsive for smaller devices */
-@media (max-width: 480px) {
-  .login-container {
-    padding: 30px 25px;
-  }
-
-  .login-container h1 {
-    font-size: 1.8rem;
-  }
-
-  .login-btn {
-    font-size: 1rem;
-    padding: 13px 0;
-  }
 }
 
