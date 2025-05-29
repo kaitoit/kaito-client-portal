@@ -1,69 +1,32 @@
 // src/App.js
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { MsalProvider, useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig } from "./authConfig";
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import SubmitTicketPage from "./pages/SubmitTicketPage";
 
-// Initialize MSAL instance
-const msalInstance = new PublicClientApplication(msalConfig);
-
-// Route protection wrapper
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = useIsAuthenticated();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
-
-function AppRoutes() {
+export default function App() {
   const { inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
+  // If MSAL is still handling a redirect, show a loader
   if (inProgress === "startup" || inProgress === "handleRedirect") {
-    // Show a loading indicator while MSAL processes the redirect
     return (
-      <div style={{ color: "white", textAlign: "center", marginTop: "2rem" }}>
+      <div style={{
+        color: "white",
+        textAlign: "center",
+        marginTop: "2rem",
+      }}>
         Loading...
       </div>
     );
   }
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          isAuthenticated ? (
-            <DashboardPage />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/submit"
-        element={
-          <ProtectedRoute>
-            <SubmitTicketPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="*"
-        element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
-      />
-    </Routes>
-  );
-}
-
-function App() {
-  return (
-    <MsalProvider instance={msalInstance}>
-      {/* Background video for all pages */}
+    <>
+      {/* Background video */}
       <video
         id="bg-video"
         autoPlay
@@ -77,18 +40,38 @@ function App() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          zIndex: -1,    // behind your content
-          opacity: 0.6,  // dim for readability
+          zIndex: -1,
+          opacity: 0.6,
         }}
       >
         <source src="/trees.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      <AppRoutes />
-    </MsalProvider>
+      {/* App routes */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? <DashboardPage />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/submit"
+          element={
+            isAuthenticated
+              ? <SubmitTicketPage />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
+        />
+      </Routes>
+    </>
   );
 }
-
-export default App;
-

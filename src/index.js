@@ -1,5 +1,5 @@
 // src/index.js
-import "./App.css";                 // ← load global styles
+import "./App.css";                        // global styles
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -10,6 +10,7 @@ import App from "./App";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
+// Wait for MSAL to finish any redirect handling before rendering
 msalInstance.handleRedirectPromise().then(() => {
   ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -20,4 +21,4 @@ msalInstance.handleRedirectPromise().then(() => {
       </MsalProvider>
     </React.StrictMode>
   );
-});
+}).catch(console.error);
