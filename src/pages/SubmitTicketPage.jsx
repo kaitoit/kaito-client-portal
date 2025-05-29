@@ -17,7 +17,7 @@ function SubmitTicketPage() {
   };
 
   return (
-    <div className="ticket-container">
+    <div className="page-container">
       <h2>Submit a Support Ticket</h2>
       {submitted ? (
         <p className="confirmation">Your ticket has been submitted. 🎉</p>
