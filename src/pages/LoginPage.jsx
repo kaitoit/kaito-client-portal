@@ -11,7 +11,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="page-container">
+    <div className="login-container">
       <h1>Kaito IT - Support Page</h1>
       <p>Log in with your Microsoft 365 account</p>
       <button className="login-btn" onClick={handleLogin}>
