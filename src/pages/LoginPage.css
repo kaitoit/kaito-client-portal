@@ -1,51 +1,63 @@
-body, html {
-  margin: 0;
-  padding: 0;
+/* Ensure page takes full height */
+body, html, #root {
   height: 100%;
-  background: #121212;
-  font-family: Arial, sans-serif;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  margin: 0;
+  font-family: "Segoe UI", Roboto, sans-serif;
 }
 
+/* Center the login box */
 .login-container {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 40px 50px;
-  border-radius: 12px;
+  position: relative;
+  z-index: 10;
   max-width: 400px;
-  width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  border-radius: 12px;
   text-align: center;
-  border: 2px solid yellow; /* For debugging */
-  z-index:1;	
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
+/* Heading */
 .login-container h1 {
-  margin-bottom: 1rem;
-  color: #aad8ff;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #66b2ff;
 }
 
+/* Subtext */
+.login-container p {
+  margin-bottom: 30px;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/* Login button */
 .login-btn {
   width: 100%;
-  padding: 15px 0;
-  font-size: 1.15rem;
-  background-color: #1a73e8;
+  padding: 14px;
+  background-color: #0078d4;
   color: white;
   border: none;
   border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .login-btn:hover {
-  background-color: #155ab6;
+  background-color: #005ea2;
+  transform: scale(1.03);
 }
 
+/* Footer */
 footer {
-  margin-top: 3rem;
-  font-size: 0.85rem;
-  color: #8aa7bf;
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: #aaa;
 }
 
