@@ -11,14 +11,9 @@ export default function App() {
   const { inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
-  // If MSAL is still handling a redirect, show a loader
   if (inProgress === "startup" || inProgress === "handleRedirect") {
     return (
-      <div style={{
-        color: "white",
-        textAlign: "center",
-        marginTop: "2rem",
-      }}>
+      <div className="loading-indicator">
         Loading...
       </div>
     );
@@ -26,35 +21,17 @@ export default function App() {
 
   return (
     <>
-      {/* Background video */}
-      <video
-        id="bg-video"
-        autoPlay
-        muted
-        loop
-        playsInline
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          zIndex: -1,
-          opacity: 0.6,
-        }}
-      >
+      {/* video now uses a CSS class */}
+      <video className="background-video" autoPlay muted loop playsInline>
         <source src="/trees.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
       </video>
 
-      {/* App routes */}
       <Routes>
         <Route
           path="/"
           element={
-            isAuthenticated
-              ? <DashboardPage />
+            isAuthenticated 
+              ? <DashboardPage /> 
               : <Navigate to="/login" replace />
           }
         />
@@ -62,8 +39,8 @@ export default function App() {
         <Route
           path="/submit"
           element={
-            isAuthenticated
-              ? <SubmitTicketPage />
+            isAuthenticated 
+              ? <SubmitTicketPage /> 
               : <Navigate to="/login" replace />
           }
         />
