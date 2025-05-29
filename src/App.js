@@ -1,4 +1,5 @@
 // src/App.js
+import './App.css';
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
@@ -25,7 +26,8 @@ export default function App() {
       <video className="background-video" autoPlay muted loop playsInline>
         <source src="/trees.mp4" type="video/mp4" />
       </video>
-
+      <div className="main-container">
+            
       <Routes>
         <Route
           path="/"
@@ -49,6 +51,14 @@ export default function App() {
           element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
         />
       </Routes>
+</div>
     </>
   );
 }
+
+
+
+
+
+
+

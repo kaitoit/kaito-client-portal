@@ -1,25 +1,21 @@
-import React from "react";
-import { useMsal } from "@azure/msal-react";
-import { loginRequest } from "../authConfig";
-import "../App.css"; // ensure the CSS is loaded
+import React from "react";import React from 'react';
+import { useMsal } from '@azure/msal-react';
+import { loginRequest } from '../authConfig';
+import './LoginPage.css';
 
-function LoginPage() {
+export default function LoginPage() {
   const { instance } = useMsal();
-
-  const handleLogin = () => {
-    instance.loginRedirect(loginRequest).catch(console.error);
-  };
+  const handleLogin = () => instance.loginRedirect(loginRequest);
 
   return (
-    <div className="login-container">
-      <h1>Kaito IT - Support Page</h1>
-      <p>Log in with your Microsoft 365 account</p>
-      <button className="login-btn" onClick={handleLogin}>
-        Login with Microsoft
-      </button>
-      <footer>© 2025 Kaito IT</footer>
+    <div className="login-page centered">
+      <div className="login-card">
+        <h1>Kaito IT Support</h1>
+        <p>Please log in with your Microsoft 365 account</p>
+        <button onClick={handleLogin}>Login with Microsoft</button>
+        <footer>© 2025 Kaito IT</footer>
+      </div>
     </div>
   );
 }
 
-export default LoginPage;
