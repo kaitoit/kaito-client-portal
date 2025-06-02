@@ -1,6 +1,6 @@
 /* src/App.css */
 
-/* 1. Reset & base */
+/* 1. Reset & Base */
 *,
 *::before,
 *::after {
@@ -11,10 +11,10 @@
 
 html, body, #root {
   height: 100%;
-  background-color: #111; /* fallback if video doesn’t load */
+  background-color: #111; /* fallback if video fails */
   color: #eee;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden; /* video covers entire viewport */
+  overflow: hidden; /* hide scrollbars behind the video */
 }
 
 /* 2. Fullscreen background video */
@@ -26,17 +26,18 @@ html, body, #root {
   height: 100vh;
   object-fit: cover;
   filter: brightness(0.4);
+  z-index: -1; /* behind all content */
 }
 
-/* 3. Main container holds routes (placed after video in DOM) */
+/* 3. Main container (holds all pages) */
 .main-container {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow-y: auto; /* allow scrolling if page content grows */
+  overflow-y: auto; /* if pages grow taller, let them scroll */
 }
 
-/* 4. Semi-transparent overlay behind cards */
+/* 4. Page wrapper: a semi-transparent overlay behind the card */
 .page-wrapper {
   width: 100%;
   min-height: 100%;
@@ -47,7 +48,7 @@ html, body, #root {
   padding: 2rem 1rem;
 }
 
-/* 5. Card-like container for each page */
+/* 5. Card-like container for each page’s content */
 .page-container {
   background: rgba(0, 0, 0, 0.85);
   padding: 2rem;
@@ -59,21 +60,21 @@ html, body, #root {
   color: #fff;
 }
 
-/* 6. Headings inside card */
+/* 6. Headings inside the card */
 .page-container h1 {
   margin-bottom: 1rem;
   font-size: 1.75rem;
   color: #66aaff;
 }
 
-/* 7. Paragraphs inside card */
+/* 7. Paragraphs inside the card */
 .page-container p {
   margin-bottom: 1.5rem;
   font-size: 1rem;
   color: #ccc;
 }
 
-/* 8. Buttons inside card */
+/* 8. Buttons inside the card */
 .page-container button {
   width: 100%;
   padding: 0.75rem;
@@ -92,17 +93,18 @@ html, body, #root {
   transform: translateY(-2px);
 }
 
-/* 9. Footer inside card */
+/* 9. Footer text inside the card */
 .page-container footer {
   margin-top: 1.5rem;
   font-size: 0.8rem;
   color: #888;
 }
 
-/* 10. Loading indicator */
+/* 10. Loading indicator if MSAL is initializing */
 .loading-indicator {
   color: #fff;
   text-align: center;
   margin-top: 2rem;
 }
+
 

@@ -12,48 +12,45 @@ export default function App() {
   const { inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
-  // While MSAL is initializing or handling redirect, show a loader
+  // Show a loader while MSAL is initializing/handling redirect
   if (inProgress === "startup" || inProgress === "handleRedirect") {
     return <div className="loading-indicator">Loading...</div>;
   }
 
   return (
     <>
-      {/* Background video */}
+      {/* 1) Background video, once for the entire app */}
       <video className="background-video" autoPlay muted loop playsInline>
         <source src="/trees.mp4" type="video/mp4" />
       </video>
 
-      {/* Main container, placed after video in DOM */}
+      {/* 2) Main container wraps the Routes */}
       <div className="main-container">
-        {/* The .page-wrapper provides a dim overlay behind each page’s card */}
-        <div className="page-wrapper">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                isAuthenticated
-                  ? <DashboardPage />
-                  : <Navigate to="/login" replace />
-              }
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/submit"
-              element={
-                isAuthenticated
-                  ? <SubmitTicketPage />
-                  : <Navigate to="/login" replace />
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <Navigate to={isAuthenticated ? "/" : "/login"} replace />
-              }
-            />
-          </Routes>
-        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isAuthenticated
+                ? <DashboardPage />
+                : <Navigate to="/login" replace />
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/submit"
+            element={
+              isAuthenticated
+                ? <SubmitTicketPage />
+                : <Navigate to="/login" replace />
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+            }
+          />
+        </Routes>
       </div>
     </>
   );
