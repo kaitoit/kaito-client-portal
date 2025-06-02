@@ -15,7 +15,6 @@ html, body, #root {
   overflow: hidden; /* hides behind video */
 }
 
-/* Fullscreen background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -23,8 +22,10 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  z-index: -1;
-  filter: brightness(0.4);
+  border: 5px dashed lime; /* DEBUG: shows the video’s edges */
+  /* comment out z-index and filter while testing */
+  /* z-index: -1; */
+  /* filter: brightness(0.4); */
 }
 
 /* Main container for routes */
