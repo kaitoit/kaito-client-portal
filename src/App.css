@@ -1,7 +1,9 @@
 /* src/App.css */
 
-/* Reset & base */
-* {
+/* 1. Reset & base */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -9,12 +11,13 @@
 
 html, body, #root {
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #111;
+  background-color: #111; /* fallback if video fails */
   color: #eee;
-  overflow: hidden; /* hides behind video */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* hide scrollbars behind video */
 }
 
+/* 2. Fullscreen background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -22,44 +25,86 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  border: 5px dashed lime; /* DEBUG: shows the video’s edges */
-  /* comment out z-index and filter while testing */
-  /* z-index: -1; */
-  /* filter: brightness(0.4); */
+  z-index: -1;
+  filter: brightness(0.4);
 }
 
-/* Main container for routes */
+/* 3. Main container holds routes and scrolls if needed */
 .main-container {
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
-  overflow-y: auto; /* allow scrolling if content overflows */
+  overflow-y: auto; /* enable scrolling inside if content overflows */
 }
 
-/* Center utility (for login page card, etc.) */
-.centered {
+/* 4. A semi‐transparent overlay behind page cards */
+.page-wrapper {
+  width: 100%;
+  min-height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* dark overlay to dim video */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  padding: 2rem 1rem;
 }
 
-/* Card-like container for pages */
+/* 5. Card-like container for each page */
 .page-container {
-  position: relative;
-  max-width: 400px;
-  margin: 10vh auto;
+  background: rgba(0, 0, 0, 0.85);
   padding: 2rem;
-  background: rgba(0, 0, 0, 0.75);
-  border-radius: 8px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
   box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  color: #fff;
   text-align: center;
+  color: #fff;
 }
 
-/* Loading indicator */
+/* 6. Example headings */
+.page-container h1 {
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  color: #66aaff;
+}
+
+/* 7. Example paragraphs */
+.page-container p {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/* 8. Buttons */
+.page-container button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3a86ff, #0057e7);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.page-container button:hover {
+  background: linear-gradient(135deg, #0057e7, #003bb5);
+  transform: translateY(-2px);
+}
+
+/* 9. Footer text */
+.page-container footer {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* 10. Loading indicator (during MSAL redirect) */
 .loading-indicator {
+  position: relative;
+  z-index: 2;
   color: #fff;
   text-align: center;
   margin-top: 2rem;

@@ -1,21 +1,32 @@
-import React from "react";
-import { useMsal } from '@azure/msal-react';
-import { loginRequest } from '../authConfig';
-import './LoginPage.css';
+// src/pages/LoginPage.js
+import React, { useEffect } from "react";
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+import { loginRequest } from "../authConfig";
+import { useNavigate } from "react-router-dom";
+import "../App.css"; // ensure CSS classes are available
 
 export default function LoginPage() {
   const { instance } = useMsal();
-  const handleLogin = () => instance.loginRedirect(loginRequest);
+  const isAuthenticated = useIsAuthenticated();
+  const navigate = useNavigate();
+
+  // If already signed in, go to "/"
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogin = () => {
+    instance.loginRedirect(loginRequest).catch(console.error);
+  };
 
   return (
-    <div className="login-page centered">
-      <div className="login-card">
-        <h1>Kaito IT Support</h1>
-        <p>Please log in with your Microsoft 365 account</p>
-        <button onClick={handleLogin}>Login with Microsoft</button>
-        <footer>© 2025 Kaito IT</footer>
-      </div>
+    <div className="page-container">
+      <h1>Kaito IT - Support Page</h1>
+      <p>Log in with your Microsoft 365 account</p>
+      <button onClick={handleLogin}>Login with Microsoft</button>
+      <footer>© 2025 Kaito IT</footer>
     </div>
   );
 }
-

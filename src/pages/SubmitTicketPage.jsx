@@ -1,47 +1,15 @@
-import React, { useState } from "react";
-import "./SubmitTicketPage.css";
+// src/pages/SubmitTicketPage.js
+import React from "react";
+import "../App.css"; // ensure .page-container is available
 
-function SubmitTicketPage() {
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // TODO: Replace with actual backend API call
-    console.log("Ticket submitted:", { subject, description });
-    setSubmitted(true);
-    setSubject("");
-    setDescription("");
-  };
-
+export default function SubmitTicketPage() {
   return (
     <div className="page-container">
-      <h2>Submit a Support Ticket</h2>
-      {submitted ? (
-        <p className="confirmation">Your ticket has been submitted. 🎉</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Describe your issue"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows="6"
-            required
-          />
-          <button type="submit">Submit Ticket</button>
-        </form>
-      )}
+      <h1>Submit a Support Ticket</h1>
+      <p>Fill in your details below.</p>
+      {/* Add your form fields here */}
+      <footer>© 2025 Kaito IT</footer>
     </div>
   );
 }
 
-export default SubmitTicketPage;
