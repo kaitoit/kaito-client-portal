@@ -17,7 +17,6 @@ html, body, #root {
   overflow: hidden; /* hide scrollbars behind video */
 }
 
-/* 2. Fullscreen background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -25,8 +24,9 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  z-index: -1;
-  filter: brightness(0.4);
+  /* comment out z-index and filter while testing */
+  /* z-index: -1; */
+  /* filter: brightness(0.4); */
 }
 
 /* 3. Main container holds routes and scrolls if needed */
