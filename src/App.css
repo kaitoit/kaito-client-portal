@@ -11,12 +11,13 @@
 
 html, body, #root {
   height: 100%;
-  background-color: #111; /* fallback if video fails */
+  background-color: #111; /* fallback if video doesn’t load */
   color: #eee;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden; /* hide scrollbars behind video */
+  overflow: hidden; /* video covers entire viewport */
 }
 
+/* 2. Fullscreen background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -24,25 +25,22 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  /* comment out z-index and filter while testing */
-  /* z-index: -1; */
-  /* filter: brightness(0.4); */
+  filter: brightness(0.4);
 }
 
-/* 3. Main container holds routes and scrolls if needed */
+/* 3. Main container holds routes (placed after video in DOM) */
 .main-container {
   position: relative;
-  z-index: 1;
   width: 100%;
   height: 100%;
-  overflow-y: auto; /* enable scrolling inside if content overflows */
+  overflow-y: auto; /* allow scrolling if page content grows */
 }
 
-/* 4. A semi‐transparent overlay behind page cards */
+/* 4. Semi-transparent overlay behind cards */
 .page-wrapper {
   width: 100%;
   min-height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* dark overlay to dim video */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -61,21 +59,21 @@ html, body, #root {
   color: #fff;
 }
 
-/* 6. Example headings */
+/* 6. Headings inside card */
 .page-container h1 {
   margin-bottom: 1rem;
   font-size: 1.75rem;
   color: #66aaff;
 }
 
-/* 7. Example paragraphs */
+/* 7. Paragraphs inside card */
 .page-container p {
   margin-bottom: 1.5rem;
   font-size: 1rem;
   color: #ccc;
 }
 
-/* 8. Buttons */
+/* 8. Buttons inside card */
 .page-container button {
   width: 100%;
   padding: 0.75rem;
@@ -94,17 +92,15 @@ html, body, #root {
   transform: translateY(-2px);
 }
 
-/* 9. Footer text */
+/* 9. Footer inside card */
 .page-container footer {
   margin-top: 1.5rem;
   font-size: 0.8rem;
   color: #888;
 }
 
-/* 10. Loading indicator (during MSAL redirect) */
+/* 10. Loading indicator */
 .loading-indicator {
-  position: relative;
-  z-index: 2;
   color: #fff;
   text-align: center;
   margin-top: 2rem;

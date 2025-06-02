@@ -12,42 +12,38 @@ export default function App() {
   const { inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
-  // Show a simple loading state while MSAL processes the redirect
+  // While MSAL is initializing or handling redirect, show a loader
   if (inProgress === "startup" || inProgress === "handleRedirect") {
     return <div className="loading-indicator">Loading...</div>;
   }
 
   return (
     <>
-      {/* 1. Video background */}
+      {/* Background video */}
       <video className="background-video" autoPlay muted loop playsInline>
         <source src="/trees.mp4" type="video/mp4" />
       </video>
 
-      {/* 2. Main container (allows scrolling if needed) */}
+      {/* Main container, placed after video in DOM */}
       <div className="main-container">
-        {/* 3. Overlay behind the card so video is dimmed */}
+        {/* The .page-wrapper provides a dim overlay behind each page’s card */}
         <div className="page-wrapper">
           <Routes>
             <Route
               path="/"
               element={
-                isAuthenticated ? (
-                  <DashboardPage />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                isAuthenticated
+                  ? <DashboardPage />
+                  : <Navigate to="/login" replace />
               }
             />
             <Route path="/login" element={<LoginPage />} />
             <Route
               path="/submit"
               element={
-                isAuthenticated ? (
-                  <SubmitTicketPage />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
+                isAuthenticated
+                  ? <SubmitTicketPage />
+                  : <Navigate to="/login" replace />
               }
             />
             <Route

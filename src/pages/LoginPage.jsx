@@ -1,16 +1,16 @@
-// src/pages/LoginPage.js
+// src/pages/LoginPage.jsx
 import React, { useEffect } from "react";
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // ensure CSS classes are available
+import "../App.css";
 
 export default function LoginPage() {
   const { instance } = useMsal();
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // If already signed in, go to "/"
+  // If already signed in, go straight to "/"
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/", { replace: true });
