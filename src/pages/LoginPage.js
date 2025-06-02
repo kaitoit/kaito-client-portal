@@ -1,16 +1,16 @@
-// src/pages/LoginPage.js
+// src/pages/LoginPage.jsx
 import React, { useEffect } from "react";
 import { useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // so .page-wrapper + .page-container are available
+import "../App.css";  // ensure .page-container is available
 
 export default function LoginPage() {
   const { instance } = useMsal();
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // If already signed in, send the user to "/"
+  // If already signed in, go to "/"
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/", { replace: true });
@@ -22,13 +22,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="page-wrapper">
-      <div className="page-container">
-        <h1>Kaito IT - Support Page</h1>
-        <p>Log in with your Microsoft 365 account</p>
-        <button onClick={handleLogin}>Login with Microsoft</button>
-        <footer>© 2025 Kaito IT</footer>
-      </div>
+    <div className="page-container">
+      <h1>Kaito IT - Support Page</h1>
+      <p>Log in with your Microsoft 365 account</p>
+      <button onClick={handleLogin}>Login with Microsoft</button>
+      <footer>© 2025 Kaito IT</footer>
     </div>
   );
 }

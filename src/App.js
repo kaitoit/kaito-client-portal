@@ -12,21 +12,22 @@ export default function App() {
   const { inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
 
-  // Show a loader while MSAL is initializing/handling redirect
+  // Show a simple loading state while MSAL is initializing or handling redirect
   if (inProgress === "startup" || inProgress === "handleRedirect") {
     return <div className="loading-indicator">Loading...</div>;
   }
 
   return (
     <>
-      {/* 1) Background video, once for the entire app */}
+      {/* 1) Background video (always visible behind content) */}
       <video className="background-video" autoPlay muted loop playsInline>
         <source src="/trees.mp4" type="video/mp4" />
       </video>
 
-      {/* 2) Main container wraps the Routes */}
+      {/* 2) main-container is transparent, so video shows through */}
       <div className="main-container">
         <Routes>
+          {/* Root route: if signed in, show Dashboard; if not, go to /login */}
           <Route
             path="/"
             element={
@@ -35,7 +36,11 @@ export default function App() {
                 : <Navigate to="/login" replace />
             }
           />
+
+          {/* Login route always available */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Submit Ticket (protected) */}
           <Route
             path="/submit"
             element={
@@ -44,6 +49,8 @@ export default function App() {
                 : <Navigate to="/login" replace />
             }
           />
+
+          {/* Catch-all -> either / or /login */}
           <Route
             path="*"
             element={
@@ -55,5 +62,4 @@ export default function App() {
     </>
   );
 }
-
 
