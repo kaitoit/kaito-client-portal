@@ -1,6 +1,6 @@
 /* src/App.css */
 
-/* 1. Reset & base */
+/* 1. Reset */
 *,
 *::before,
 *::after {
@@ -11,59 +11,65 @@
 
 html, body, #root {
   height: 100%;
-  background-color: #111;        /* fallback if video doesn't load */
-  color: #eee;
+  background-color: #111;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden;              /* hide any scrollbars under the video */
+  color: #eee;
+  overflow: hidden;
 }
 
+/* 2. Video */
 .background-video {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
   opacity: 0.6;
+  z-index: -1;
+}
+
+/* 3. Layout */
+.app-wrapper {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-container {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
-  padding: 2rem;
-  color: white;
-}
-
-/* 4. Centered card for each page */
-.page-container {
-  position: relative;            /* sits above the video automatically */
   width: 100%;
-  max-width: 400px;
-  margin: 10vh auto;             /* top/bottom spacing, centered horizontally */
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.75);/* semi-transparent dark card */
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  text-align: center;
-  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* 5. Headings inside the card */
+/* 4. Card-style pages */
+.page-container {
+  background: rgba(0, 0, 0, 0.75);
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
 .page-container h1 {
   margin-bottom: 1rem;
   font-size: 1.75rem;
   color: #66aaff;
 }
 
-/* 6. Paragraphs inside the card */
 .page-container p {
   margin-bottom: 1.5rem;
   font-size: 1rem;
   color: #ccc;
 }
 
-/* 7. Buttons inside the card */
 .page-container button {
   width: 100%;
   padding: 0.75rem;
@@ -82,17 +88,16 @@ html, body, #root {
   transform: translateY(-2px);
 }
 
-/* 8. Footer text inside the card */
 .page-container footer {
   margin-top: 1.5rem;
   font-size: 0.8rem;
   color: #888;
 }
 
-/* 9. Loading indicator during MSAL redirect */
+/* 5. Loading State */
 .loading-indicator {
-  color: #fff;
   text-align: center;
+  color: white;
   margin-top: 2rem;
 }
 

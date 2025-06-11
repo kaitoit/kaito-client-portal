@@ -14,11 +14,7 @@ export default function App() {
   const isAuthenticated = useIsAuthenticated();
 
   if (inProgress === "startup" || inProgress === "handleRedirect") {
-    return (
-      <div className="loading-indicator">
-        Loading...
-      </div>
-    );
+    return <div className="loading-indicator">Loading...</div>;
   }
 
   return (
@@ -45,9 +41,7 @@ export default function App() {
       />
       <Route
         path="/login"
-        element={
-          <Layout><LoginPage /></Layout>
-        }
+        element={<Layout><LoginPage /></Layout>}
       />
       <Route
         path="*"

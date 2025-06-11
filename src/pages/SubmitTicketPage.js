@@ -8,29 +8,33 @@ export default function SubmitTicketPage() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // If not signed in, bounce back to /login
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  console.log("🔔 SubmitTicketPage rendered, isAuthenticated:", isAuthenticated);
-
   return (
     <div className="page-container">
       <h1>Submit a Support Ticket</h1>
-      <p>Fill in your details below.</p>
-      {/* Insert your form fields here */}
-      <button
-        onClick={() => {
-          alert("Pretending we submitted a ticket!");
-          navigate("/");
-        }}
-        style={{ marginTop: "1rem" }}
-      >
-        Submit Ticket
-      </button>
+      <p>Fill out the form below to create a new support request.</p>
+      
+      <form onSubmit={(e) => { e.preventDefault(); alert("Ticket submitted!"); }}>
+        <input
+          type="text"
+          placeholder="Subject"
+          required
+          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+        />
+        <textarea
+          placeholder="Describe your issue..."
+          rows="5"
+          required
+          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+        />
+        <button type="submit">Submit Ticket</button>
+      </form>
+
       <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
     </div>
   );
