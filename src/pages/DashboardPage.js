@@ -16,8 +16,8 @@ export default function DashboardPage() {
 
   return (
     <div className="page-container">
-      <h1>Welcome to Your Dashboard</h1>
-      <p>Your login was successful. You can manage your tickets here.</p>
+      <h1>Kaito IT Dashboard</h1>
+      <p>Your login was successful. View service status and submit support tickets.</p>
       
       <button
         onClick={() => navigate("/submit")}
