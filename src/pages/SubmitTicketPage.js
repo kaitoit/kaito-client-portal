@@ -7,11 +7,18 @@ export default function SubmitTicketPage() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  const [subject, setSubject] = useState("");
+  // Form state
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
+  const [component, setComponent] = useState("");
+  const [priority, setPriority] = useState("normal");
+
+  // UI state
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
@@ -27,21 +34,28 @@ export default function SubmitTicketPage() {
       const response = await fetch("/api/submit-ticket", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          subject,
+          name,
+          email,
           description,
-          timestamp: new Date().toISOString()
-        })
+          component,
+          priority,
+        }),
       });
 
       if (response.ok) {
         setMessage("✅ Ticket submitted successfully.");
-        setSubject("");
+        // Clear form fields after successful submit
+        setName("");
+        setEmail("");
         setDescription("");
+        setComponent("");
+        setPriority("normal");
       } else {
-        setMessage("❌ Failed to submit ticket. Please try again.");
+        const errorData = await response.json();
+        setMessage(`❌ Failed to submit ticket. ${errorData?.error || ""}`);
       }
     } catch (error) {
       console.error("Error submitting ticket:", error);
@@ -59,15 +73,21 @@ export default function SubmitTicketPage() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          name="subject"
-          placeholder="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+        />
+        <input
+          type="email"
+          placeholder="Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
         />
         <textarea
-          name="description"
           placeholder="Describe your issue..."
           rows="5"
           value={description}
@@ -75,6 +95,26 @@ export default function SubmitTicketPage() {
           required
           style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
         />
+        <input
+          type="text"
+          placeholder="Component (optional)"
+          value={component}
+          onChange={(e) => setComponent(e.target.value)}
+          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+        />
+        <label htmlFor="priority" style={{ display: "block", marginBottom: "0.5rem" }}>
+          Priority:
+        </label>
+        <select
+          id="priority"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
+        >
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+        </select>
+
         <button
           type="submit"
           disabled={submitting}
@@ -84,7 +124,7 @@ export default function SubmitTicketPage() {
             padding: "0.75rem 1.5rem",
             border: "none",
             borderRadius: "8px",
-            cursor: "pointer"
+            cursor: submitting ? "not-allowed" : "pointer",
           }}
         >
           {submitting ? "Submitting..." : "Submit Ticket"}
@@ -92,11 +132,12 @@ export default function SubmitTicketPage() {
       </form>
 
       {message && (
-        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>
+        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>
+          {message}
+        </p>
       )}
 
       <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
     </div>
   );
 }
-
