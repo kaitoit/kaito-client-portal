@@ -4,7 +4,7 @@ const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const client = new CosmosClient({ endpoint, key });
 
-const databaseId = "KaitoSupportDB";
+const databaseId = "Support";
 const containerId = "Tickets";
 
 module.exports = async function (context, req) {
