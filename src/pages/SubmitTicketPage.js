@@ -24,7 +24,7 @@ export default function SubmitTicketPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("/api/submit-ticket", {
+      const response = await fetch("/api", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
