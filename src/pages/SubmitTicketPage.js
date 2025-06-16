@@ -24,7 +24,7 @@ export default function SubmitTicketPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("/api", {
+      const response = await fetch("/api/submit-ticket", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -91,9 +91,12 @@ export default function SubmitTicketPage() {
         </button>
       </form>
 
-      {message && <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>}
+      {message && (
+        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>
+      )}
 
       <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
     </div>
   );
 }
+
