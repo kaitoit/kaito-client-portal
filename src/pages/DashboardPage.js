@@ -7,7 +7,8 @@ export default function DashboardPage() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  const [healthData, setHealthData] = useState([
+  // Removed setHealthData since it is unused
+  const [healthData] = useState([
     {
       name: "Azure Active Directory",
       status: "Available",
@@ -88,3 +89,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
