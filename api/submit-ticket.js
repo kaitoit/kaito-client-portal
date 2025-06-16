@@ -21,7 +21,7 @@ module.exports = async function (context, req) {
       body: { message: "Ticket submitted", id: createdItem.id }
     };
   } catch (err) {
-    context.log("Error submitting ticket", err.message);
+    context.log("Error:", err.message);
     context.res = {
       status: 500,
       body: { error: "Failed to submit ticket." }
