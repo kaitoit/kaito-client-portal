@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "COSMOS_ENDPOINT": "https://kaitoit.documents.azure.com:443/",
-    "COSMOS_KEY": "h84ohtF38aqZJiuMAYuA7WTJMPFAhIF9q2WFAvtHzyYZ1KP1WxibNODmg3egUWGNf5qe8CPfpjyLACDbYk6yqA=="
+    "COSMOS_DB_ENDPOINT": "https://kaitoit.documents.azure.com:443/",
+    "COSMOS_DB_KEY": "h84ohtF38aqZJiuMAYuA7WTJMPFAhIF9q2WFAvtHzyYZ1KP1WxibNODmg3egUWGNf5qe8CPfpjyLACDbYk6yqA=="
   }
 }
