@@ -1,41 +1,43 @@
-const { Configuration, OpenAIApi } = require("openai");
+// api/chat-assistant/index.js
+const { OpenAI } = require("openai");
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = async function (context, req) {
-  const userMessage = req.body?.message;
-
-  if (!userMessage) {
-    context.res = {
-      status: 400,
-      body: { error: "Missing message in request body." }
-    };
-    return;
-  }
+  context.log("Request body:", req.body);
 
   try {
-    const chatResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
+    const message = req.body?.message;
+
+    if (!message) {
+      context.res = {
+        status: 400,
+        body: { error: "No message provided." },
+      };
+      return;
+    }
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
       messages: [
-        { role: "system", content: "You are a helpful support assistant." },
-        { role: "user", content: userMessage }
-      ]
+        { role: "system", content: "You are a helpful IT assistant." },
+        { role: "user", content: message },
+      ],
     });
 
-    const reply = chatResponse.data.choices[0].message.content;
+    const reply = response.choices?.[0]?.message?.content ?? "No response.";
 
     context.res = {
       status: 200,
-      body: { reply }
+      body: { reply },
     };
-  } catch (err) {
-    context.log("❌ OpenAI error:", err.message);
+  } catch (error) {
+    context.log("Error in ChatGPT API:", error);
     context.res = {
       status: 500,
-      body: { error: "Failed to get response from ChatGPT." }
+      body: { error: "Failed to process chat message." },
     };
   }
 };

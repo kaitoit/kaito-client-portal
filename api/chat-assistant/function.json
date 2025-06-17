@@ -1,3 +1,4 @@
+// api/chat-assistant/function.json
 {
   "bindings": [
     {
