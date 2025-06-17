@@ -7,7 +7,7 @@ export default function SubmitTicketPage() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // Form state
+  // Ticket form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
@@ -18,13 +18,18 @@ export default function SubmitTicketPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
-  // Redirect if not authenticated
+  // ChatGPT assistant state
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+
+  // Redirect unauthenticated users
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
+  // Submit ticket handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -47,7 +52,6 @@ export default function SubmitTicketPage() {
 
       if (response.ok) {
         setMessage("✅ Ticket submitted successfully.");
-        // Clear form fields after successful submit
         setName("");
         setEmail("");
         setDescription("");
@@ -63,6 +67,35 @@ export default function SubmitTicketPage() {
     }
 
     setSubmitting(false);
+  };
+
+  // ChatGPT assistant handler
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput;
+    setChatHistory((prev) => [...prev, { role: "user", content: userMessage }]);
+    setChatInput("");
+
+    try {
+      const res = await fetch("/api/chat-assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setChatHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      } else {
+        setChatHistory((prev) => [...prev, { role: "assistant", content: "❌ Assistant error." }]);
+      }
+    } catch (err) {
+      console.error(err);
+      setChatHistory((prev) => [...prev, { role: "assistant", content: "❌ Network error." }]);
+    }
   };
 
   return (
@@ -132,12 +165,39 @@ export default function SubmitTicketPage() {
       </form>
 
       {message && (
-        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>
-          {message}
-        </p>
+        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>
       )}
+
+      <hr style={{ margin: "2rem 0" }} />
+
+      <h2>Need help describing your issue?</h2>
+      <p>Use our AI Assistant below to help you write your ticket more clearly.</p>
+
+      <div style={{ background: "#f1f1f1", padding: "1rem", borderRadius: "8px" }}>
+        <div style={{ maxHeight: "200px", overflowY: "auto", marginBottom: "1rem" }}>
+          {chatHistory.map((msg, index) => (
+            <div key={index} style={{ marginBottom: "0.5rem" }}>
+              <strong>{msg.role === "user" ? "You" : "Assistant"}:</strong> {msg.content}
+            </div>
+          ))}
+        </div>
+
+        <form onSubmit={handleChatSubmit} style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Ask for help writing your ticket..."
+            style={{ flex: 1, padding: "0.5rem" }}
+          />
+          <button type="submit" style={{ padding: "0.5rem 1rem", backgroundColor: "#06d6a0", color: "white", border: "none", borderRadius: "5px" }}>
+            Ask
+          </button>
+        </form>
+      </div>
 
       <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
     </div>
   );
 }
+
