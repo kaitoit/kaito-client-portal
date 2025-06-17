@@ -11,14 +11,14 @@ module.exports = async function (context, req) {
   if (!userMessage) {
     context.res = {
       status: 400,
-      body: { error: "Message is required." }
+      body: { error: "Missing message in request body." }
     };
     return;
   }
 
   try {
     const chatResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo", // or "gpt-4" if you're subscribed
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: "You are a helpful support assistant." },
         { role: "user", content: userMessage }
@@ -32,10 +32,10 @@ module.exports = async function (context, req) {
       body: { reply }
     };
   } catch (err) {
-    context.log("ChatGPT error:", err.message);
+    context.log("❌ OpenAI error:", err.message);
     context.res = {
       status: 500,
-      body: { error: "ChatGPT API failed. Check server logs." }
+      body: { error: "Failed to get response from ChatGPT." }
     };
   }
 };
