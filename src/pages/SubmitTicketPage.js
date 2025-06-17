@@ -170,8 +170,8 @@ export default function SubmitTicketPage() {
 
       <hr style={{ margin: "2rem 0" }} />
 
-      <h2>Need help describing your issue?</h2>
-      <p>Use our AI Assistant below to help you write your ticket more clearly.</p>
+      <h2>Describe your issue here to get suggestions</h2>
+      <p>KaitoIT openAI chatbot</p>
 
       <div style={{ background: "#f1f1f1", padding: "1rem", borderRadius: "8px" }}>
         <div style={{ maxHeight: "200px", overflowY: "auto", marginBottom: "1rem" }}>
@@ -187,7 +187,7 @@ export default function SubmitTicketPage() {
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Ask for help writing your ticket..."
+            placeholder="What can we help you wtih..."
             style={{ flex: 1, padding: "0.5rem" }}
           />
           <button type="submit" style={{ padding: "0.5rem 1rem", backgroundColor: "#06d6a0", color: "white", border: "none", borderRadius: "5px" }}>
