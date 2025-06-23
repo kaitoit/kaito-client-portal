@@ -24,6 +24,7 @@ html, body, #root {
   object-fit: cover;
   opacity: 0.5;
   pointer-events: none;
+  z-index:-99;
 }
 
 /* 3. Layout */
