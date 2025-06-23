@@ -1,5 +1,6 @@
-// api/chat-assistant/index.js
-require("dotenv").config(); // Important for local use
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config(); // Optional: only used locally
+}
 
 const { OpenAI } = require("openai");
 
@@ -36,10 +37,10 @@ module.exports = async function (context, req) {
       body: { reply },
     };
   } catch (error) {
-    context.log("❌ ChatGPT Error:", error.response?.data || error.message);
+    context.log("❌ ChatGPT Error:", error?.response?.data || error.message || error);
     context.res = {
       status: 500,
-      body: { error: "ChatGPT function failed: " + error.message },
+      body: { error: "ChatGPT function failed: " + (error.message || "Unknown error") },
     };
   }
 };
