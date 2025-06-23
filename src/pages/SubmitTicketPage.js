@@ -13,23 +13,22 @@ export default function SubmitTicketPage() {
   const [description, setDescription] = useState("");
   const [component, setComponent] = useState("");
   const [priority, setPriority] = useState("normal");
-
-  // UI state
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
-  // ChatGPT assistant state
+  // Chat assistant state
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
 
-  // Redirect unauthenticated users
+  // Redirect if unauthenticated
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // Submit ticket handler
+  // Ticket submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -38,16 +37,8 @@ export default function SubmitTicketPage() {
     try {
       const response = await fetch("/api/submit-ticket", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          description,
-          component,
-          priority,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, description, component, priority }),
       });
 
       if (response.ok) {
@@ -58,25 +49,26 @@ export default function SubmitTicketPage() {
         setComponent("");
         setPriority("normal");
       } else {
-        const errorData = await response.json();
-        setMessage(`❌ Failed to submit ticket. ${errorData?.error || ""}`);
+        const errorData = await response.json().catch(() => ({}));
+        setMessage(`❌ Failed to submit ticket. ${errorData?.error || "Unknown error."}`);
       }
     } catch (error) {
-      console.error("Error submitting ticket:", error);
+      console.error("Submit error:", error);
       setMessage("❌ Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
-  // ChatGPT assistant handler
+  // ChatGPT submit handler
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    const userMessage = chatInput;
+    const userMessage = chatInput.trim();
     setChatHistory((prev) => [...prev, { role: "user", content: userMessage }]);
     setChatInput("");
+    setChatLoading(true);
 
     try {
       const res = await fetch("/api/chat-assistant", {
@@ -85,16 +77,18 @@ export default function SubmitTicketPage() {
         body: JSON.stringify({ message: userMessage }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      if (res.ok) {
+      if (res.ok && data?.reply) {
         setChatHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
       } else {
         setChatHistory((prev) => [...prev, { role: "assistant", content: "❌ Assistant error." }]);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Chat error:", err);
       setChatHistory((prev) => [...prev, { role: "assistant", content: "❌ Network error." }]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -104,82 +98,35 @@ export default function SubmitTicketPage() {
       <p>Fill out the form below to create a new support request.</p>
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Your Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
-        />
-        <input
-          type="email"
-          placeholder="Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
-        />
-        <textarea
-          placeholder="Describe your issue..."
-          rows="5"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
-        />
-        <input
-          type="text"
-          placeholder="Component (optional)"
-          value={component}
-          onChange={(e) => setComponent(e.target.value)}
-          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
-        />
-        <label htmlFor="priority" style={{ display: "block", marginBottom: "0.5rem" }}>
-          Priority:
-        </label>
-        <select
-          id="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-          style={{ width: "100%", marginBottom: "1rem", padding: "0.5rem" }}
-        >
+        <input type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <input type="email" placeholder="Your Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <textarea placeholder="Describe your issue..." rows="5" value={description} onChange={(e) => setDescription(e.target.value)} required />
+        <input type="text" placeholder="Component (optional)" value={component} onChange={(e) => setComponent(e.target.value)} />
+        <label htmlFor="priority">Priority:</label>
+        <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
           <option value="normal">Normal</option>
           <option value="high">High</option>
         </select>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{
-            backgroundColor: "#3a86ff",
-            color: "white",
-            padding: "0.75rem 1.5rem",
-            border: "none",
-            borderRadius: "8px",
-            cursor: submitting ? "not-allowed" : "pointer",
-          }}
-        >
+        <button type="submit" disabled={submitting}>
           {submitting ? "Submitting..." : "Submit Ticket"}
         </button>
       </form>
 
-      {message && (
-        <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>
-      )}
+      {message && <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>}
 
       <hr style={{ margin: "2rem 0" }} />
 
       <h2>Describe your issue here to get suggestions</h2>
-      <p>KaitoIT openAI chatbot</p>
+      <p>Kaito IT Chat Assistant</p>
 
       <div style={{ background: "#f1f1f1", padding: "1rem", borderRadius: "8px" }}>
         <div style={{ maxHeight: "200px", overflowY: "auto", marginBottom: "1rem" }}>
-          {chatHistory.map((msg, index) => (
-            <div key={index} style={{ marginBottom: "0.5rem" }}>
+          {chatHistory.map((msg, i) => (
+            <div key={i} style={{ marginBottom: "0.5rem" }}>
               <strong>{msg.role === "user" ? "You" : "Assistant"}:</strong> {msg.content}
             </div>
           ))}
+          {chatLoading && <div><em>Assistant is typing...</em></div>}
         </div>
 
         <form onSubmit={handleChatSubmit} style={{ display: "flex", gap: "0.5rem" }}>
@@ -187,11 +134,11 @@ export default function SubmitTicketPage() {
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="What can we help you wtih..."
-            style={{ flex: 1, padding: "0.5rem" }}
+            placeholder="What can we help you with?"
+            style={{ flex: 1 }}
           />
-          <button type="submit" style={{ padding: "0.5rem 1rem", backgroundColor: "#06d6a0", color: "white", border: "none", borderRadius: "5px" }}>
-            Ask
+          <button type="submit" disabled={chatLoading} style={{ backgroundColor: "#06d6a0", color: "white" }}>
+            {chatLoading ? "..." : "Ask"}
           </button>
         </form>
       </div>
@@ -200,4 +147,5 @@ export default function SubmitTicketPage() {
     </div>
   );
 }
+
 

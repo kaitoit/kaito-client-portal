@@ -1,5 +1,6 @@
 // api/chat-assistant/index.js
-require("dotenv").config({ path: "./.env" });
+require("dotenv").config(); // Important for local use
+
 const { OpenAI } = require("openai");
 
 const openai = new OpenAI({
@@ -7,7 +8,7 @@ const openai = new OpenAI({
 });
 
 module.exports = async function (context, req) {
-  context.log("Request body:", req.body);
+  context.log("🔁 Request received:", req.body);
 
   try {
     const message = req.body?.message;
@@ -20,7 +21,7 @@ module.exports = async function (context, req) {
       return;
     }
 
-    const response = await openai.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: "You are a helpful IT assistant." },
@@ -28,17 +29,17 @@ module.exports = async function (context, req) {
       ],
     });
 
-    const reply = response.choices?.[0]?.message?.content ?? "No response.";
+    const reply = completion.choices?.[0]?.message?.content ?? "No response.";
 
     context.res = {
       status: 200,
       body: { reply },
     };
   } catch (error) {
-    context.log("Error in ChatGPT API:", error);
+    context.log("❌ ChatGPT Error:", error.response?.data || error.message);
     context.res = {
       status: 500,
-      body: { error: "Failed to process chat message." },
+      body: { error: "ChatGPT function failed: " + error.message },
     };
   }
 };
