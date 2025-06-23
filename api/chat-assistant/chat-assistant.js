@@ -7,7 +7,6 @@ const openai = new OpenAI({
 module.exports = async function (context, req) {
   try {
     const message = req.body?.message;
-
     if (!message) {
       context.res = { status: 400, body: { error: "Message is required." } };
       return;

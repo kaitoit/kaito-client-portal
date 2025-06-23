@@ -1,4 +1,5 @@
 // api/chat-assistant/index.js
+require("dotenv").config({ path: "./.env" });
 const { OpenAI } = require("openai");
 
 const openai = new OpenAI({
