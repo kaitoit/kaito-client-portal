@@ -1,7 +1,7 @@
-/* 1. Reset */
-*,
-*::before,
-*::after {
+/* src/App.css */
+
+/* 1. Reset and base styles */
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -9,154 +9,120 @@
 
 html, body, #root {
   height: 100%;
+  background-color: #111;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #eee;
   overflow-x: hidden;
 }
 
-/* 2. Background Video */
+/* 2. Video */
 .background-video {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  z-index: -1;
   opacity: 0.5;
-  pointer-events: none;
-  z-index:-99;
 }
 
-/* 3. Layout */
+/* 3. Page wrapper */
 .app-wrapper {
-  min-height: 100vh;
-  padding: 2rem 1rem;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
-/* 4. Container */
+.main-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+/* 4. Card container */
 .page-container {
   background: rgba(0, 0, 0, 0.85);
   padding: 2rem;
   border-radius: 12px;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
-  z-index: 1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-/* 5. Headings and Text */
 .page-container h1 {
-  font-size: 1.75rem;
   margin-bottom: 1rem;
+  font-size: 1.8rem;
   color: #66aaff;
   text-align: center;
 }
 
 .page-container p {
+  margin-bottom: 1rem;
   font-size: 1rem;
-  margin-bottom: 1.5rem;
   color: #ccc;
   text-align: center;
 }
 
-/* 6. Forms */
-form input,
-form select,
-form textarea {
+.page-container input,
+.page-container select,
+.page-container textarea {
   width: 100%;
-  padding: 0.65rem;
   margin-bottom: 1rem;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background: #1e1e1e;
-  color: #eee;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background: #222;
+  color: white;
 }
 
-form textarea {
-  resize: vertical;
-}
-
-form button {
+.page-container button {
   width: 100%;
   padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
   background: linear-gradient(135deg, #3a86ff, #0057e7);
   border: none;
   border-radius: 8px;
   color: white;
-  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: background 0.3s ease;
 }
 
-form button:hover {
+.page-container button:hover {
   background: linear-gradient(135deg, #0057e7, #003bb5);
-  transform: translateY(-2px);
 }
 
-/* 7. Chat Assistant */
-.chat-section {
-  background: #1c1c1c;
+.chat-box {
+  background: #1a1a1a;
   padding: 1rem;
   border-radius: 8px;
   margin-top: 2rem;
 }
 
-.chat-history {
-  max-height: 250px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-  padding-right: 0.5rem;
+.chat-box div {
+  margin-bottom: 0.5rem;
 }
 
-.chat-message {
-  margin-bottom: 0.75rem;
-  line-height: 1.4;
-}
-
-.chat-message strong {
-  display: block;
-  color: #66aaff;
-  margin-bottom: 0.25rem;
-}
-
-.chat-loading {
-  color: #aaa;
-  font-style: italic;
-}
-
-/* 8. Footer */
-.page-container footer {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #888;
+footer {
   margin-top: 2rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #aaa;
 }
 
-/* 9. Media Queries for Mobile */
-@media (max-width: 500px) {
+/* 5. Responsive improvements */
+@media (max-width: 600px) {
   .page-container {
-    padding: 1.25rem 1rem;
-    border-radius: 10px;
+    padding: 1.5rem;
   }
 
-  form input,
-  form select,
-  form textarea {
-    font-size: 0.95rem;
+  .page-container h1 {
+    font-size: 1.5rem;
   }
 
-  form button {
-    font-size: 1rem;
-  }
-
-  .chat-history {
-    max-height: 200px;
-  }
-
-  .chat-message {
+  .page-container p {
     font-size: 0.95rem;
   }
 }
