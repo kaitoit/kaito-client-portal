@@ -5,11 +5,17 @@ import './App.css';
 const Layout = ({ children }) => {
   return (
     <div className="app-wrapper">
-<video className="background-video" autoPlay muted loop playsInline>
-  <source src={process.env.PUBLIC_URL + "/trees.mp4"} type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
-
+      <video
+        className="background-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      >
+        <source src={process.env.PUBLIC_URL + "/trees.mp4"} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className="main-container">
         {children}
       </div>
@@ -18,6 +24,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
-
-
 
