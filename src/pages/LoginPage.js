@@ -11,11 +11,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="page-container">
-      <h1>Login to Continue</h1>
-      <p>Welcome to the Kaito IT Client Portal. Please sign in to access your dashboard.</p>
-      <button onClick={handleLogin}>Sign in with Microsoft</button>
-      <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
+    <div className="app-wrapper">
+      <div className="main-container">
+        <div className="page-container">
+          <h1>Login to Continue</h1>
+          <p>Welcome to the Kaito IT Client Portal. Please sign in to access your dashboard.</p>
+          <button onClick={handleLogin}>Sign in with Microsoft</button>
+          <footer>© 2025 Kaito IT</footer>
+        </div>
+      </div>
     </div>
   );
 }
