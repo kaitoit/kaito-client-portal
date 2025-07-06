@@ -1,6 +1,4 @@
-/* src/App.css */
-
-/* 1. Reset and base styles */
+/* Reset & Base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,7 +13,7 @@ html, body, #root {
   overflow-x: hidden;
 }
 
-/* 2. Video */
+/* Background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -27,7 +25,7 @@ html, body, #root {
   opacity: 0.5;
 }
 
-/* 3. Page wrapper */
+/* Layout */
 .app-wrapper {
   display: flex;
   justify-content: center;
@@ -43,7 +41,6 @@ html, body, #root {
   z-index: 1;
 }
 
-/* 4. Card container */
 .page-container {
   background: rgba(0, 0, 0, 0.85);
   padding: 2rem;
@@ -51,23 +48,8 @@ html, body, #root {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-.page-container h1 {
-  margin-bottom: 1rem;
-  font-size: 1.8rem;
-  color: #66aaff;
-  text-align: center;
-}
-
-.page-container p {
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  color: #ccc;
-  text-align: center;
-}
-
-.page-container input,
-.page-container select,
-.page-container textarea {
+/* Form */
+input, textarea, select, button {
   width: 100%;
   margin-bottom: 1rem;
   padding: 0.75rem;
@@ -77,34 +59,37 @@ html, body, #root {
   color: white;
 }
 
-.page-container button {
-  width: 100%;
-  padding: 0.75rem;
+button {
   font-size: 1rem;
   font-weight: bold;
   background: linear-gradient(135deg, #3a86ff, #0057e7);
-  border: none;
-  border-radius: 8px;
-  color: white;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.page-container button:hover {
+button:hover {
   background: linear-gradient(135deg, #0057e7, #003bb5);
 }
 
-.chat-box {
-  background: #1a1a1a;
-  padding: 1rem;
+/* Status badge */
+.status-badge {
+  padding: 0.4rem 0.75rem;
   border-radius: 8px;
-  margin-top: 2rem;
+  font-weight: bold;
+  font-size: 0.85rem;
 }
 
-.chat-box div {
-  margin-bottom: 0.5rem;
+.status-ok {
+  background-color: limegreen;
+  color: black;
 }
 
+.status-issue {
+  background-color: orange;
+  color: black;
+}
+
+/* Footer */
 footer {
   margin-top: 2rem;
   font-size: 0.8rem;
@@ -112,18 +97,13 @@ footer {
   color: #aaa;
 }
 
-/* 5. Responsive improvements */
+/* Responsive */
 @media (max-width: 600px) {
   .page-container {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
-  .page-container h1 {
+  h1 {
     font-size: 1.5rem;
   }
-
-  .page-container p {
-    font-size: 0.95rem;
-  }
 }
-
