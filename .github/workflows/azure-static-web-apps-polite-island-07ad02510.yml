@@ -30,7 +30,7 @@ with:
   api_location: "/api"
   output_location: "build"
   app_build_command: "npm install && npm run build"
-
+          ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
