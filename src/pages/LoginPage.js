@@ -1,10 +1,19 @@
-// src/pages/LoginPage.jsx
-import React from "react";
-import { useMsal } from "@azure/msal-react";
+import React, { useEffect } from "react";
+import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 
 export default function LoginPage() {
   const { instance } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Redirect to dashboard if already logged in
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <PageWrapper>
