@@ -2,6 +2,7 @@
   "name": "kaito-client-portal",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@azure/cosmos": "^4.4.1",
     "@azure/msal-browser": "^4.12.0",
