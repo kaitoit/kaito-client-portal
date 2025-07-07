@@ -10,18 +10,19 @@ const Layout = ({ children }) => {
         Your browser does not support the video tag.
       </video>
 
-      <div className="header-container">
+      <header className="header-container">
         <div className="header-inner">
           <div className="logo-header horizontal">
-            <img
-              src={process.env.PUBLIC_URL + "/logo512.png"}
-              alt="Logo"
-              className="site-logo"
-            />
+            <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Kaito Logo" className="site-logo" />
             <div className="logo-text full-width">Kaito IT</div>
           </div>
+          <img
+            src={process.env.PUBLIC_URL + "/cleverit.png"}
+            alt="Clever IT. Smooth Sailing."
+            className="slogan-image"
+          />
         </div>
-      </div>
+      </header>
 
       <div className="main-container">
         {children}
