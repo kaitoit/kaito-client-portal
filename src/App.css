@@ -91,7 +91,7 @@ html, body, #root {
 .main-container {
   width: 100%;
   max-width: 640px;
-  margin: 7.5rem auto 2rem; /* space for fixed header */
+  margin: 2rem auto 2rem; /* space for fixed header */
   z-index: 1;
 }
 
