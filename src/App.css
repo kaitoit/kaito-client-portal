@@ -180,3 +180,30 @@ li.service-item .status-issue {
   }
 }
 
+/* Logo styling */
+.logo-wrapper {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease-in;
+}
+
+.site-logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.site-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Optional fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
