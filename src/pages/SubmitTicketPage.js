@@ -1,16 +1,12 @@
-// src/pages/SubmitTicketPage.jsx
 import React, { useEffect, useState } from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
-import PageWrapper from "../components/PageWrapper";
-import Toast from "../components/Toast";
 import "../App.css";
 
 export default function SubmitTicketPage() {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
 
-  // Form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
@@ -18,9 +14,7 @@ export default function SubmitTicketPage() {
   const [priority, setPriority] = useState("normal");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState("info");
 
-  // Chat assistant state
   const [chatInput, setChatInput] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -45,17 +39,18 @@ export default function SubmitTicketPage() {
 
       if (response.ok) {
         setMessage("✅ Ticket submitted successfully.");
-        setMessageType("success");
-        setName(""); setEmail(""); setDescription(""); setComponent(""); setPriority("normal");
+        setName("");
+        setEmail("");
+        setDescription("");
+        setComponent("");
+        setPriority("normal");
       } else {
         const errorData = await response.json().catch(() => ({}));
         setMessage(`❌ Failed to submit ticket. ${errorData?.error || "Unknown error."}`);
-        setMessageType("error");
       }
     } catch (error) {
       console.error("Submit error:", error);
       setMessage("❌ Network error. Please try again.");
-      setMessageType("error");
     } finally {
       setSubmitting(false);
     }
@@ -93,7 +88,7 @@ export default function SubmitTicketPage() {
   };
 
   return (
-    <PageWrapper>
+    <div className="page-container">
       <h1>Submit a Support Ticket</h1>
       <p>Fill out the form below to create a new support request.</p>
 
@@ -112,7 +107,7 @@ export default function SubmitTicketPage() {
         </button>
       </form>
 
-      {message && <Toast message={message} type={messageType} />}
+      {message && <p style={{ marginTop: "1rem", fontWeight: "bold" }}>{message}</p>}
 
       <hr style={{ margin: "2rem 0" }} />
 
@@ -129,23 +124,21 @@ export default function SubmitTicketPage() {
           {chatLoading && <div><em>Assistant is typing...</em></div>}
         </div>
 
-        <form onSubmit={handleChatSubmit} style={{ display: "flex", gap: "0.5rem" }}>
+        <form onSubmit={handleChatSubmit} className="chat-form">
           <input
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
             placeholder="What can we help you with?"
-            style={{ flex: 1 }}
           />
-          <button type="submit" disabled={chatLoading} style={{ backgroundColor: "#06d6a0", color: "white" }}>
+          <button type="submit" disabled={chatLoading}>
             {chatLoading ? "..." : "Ask"}
           </button>
         </form>
       </div>
 
-      <footer>© 2025 Kaito IT</footer>
-    </PageWrapper>
+      <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
+    </div>
   );
 }
-
 

@@ -1,4 +1,4 @@
-/* 1. Reset and Base Styles */
+/* 1. Reset and base styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -13,7 +13,7 @@ html, body, #root {
   overflow-x: hidden;
 }
 
-/* 2. Background Video */
+/* 2. Video background */
 .background-video {
   position: fixed;
   top: 0;
@@ -21,79 +21,34 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.3;
+  opacity: 0.6;
+  z-index: -1;
 }
 
-/* 3. Fixed Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 1rem 2rem;
-  border-bottom: 1px solid #222;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 999;
-}
-
-/* Left side: logo + title */
-.logo-title {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  max-width: 600px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.logo-title img {
-  height: 48px;
-  width: auto;
-  object-fit: contain;
-}
-
-.logo-title span {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 1px;
-}
-
-/* Right side: cleverit slogan image */
-.header img.cleverit {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-  margin-left: auto;
-}
-
-/* 4. Main Wrapper (pushes down under fixed header) */
+/* 3. Layout wrapper and main content */
 .app-wrapper {
-  padding-top: 80px;
+  padding-top: 90px; /* space for fixed header */
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 
-/* 5. Centered Content Container */
 .main-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  margin: 0 auto;
   z-index: 1;
+  padding-top: 1rem; /* tighter spacing between header and content */
 }
 
-/* 6. Page Container */
+/* 4. Page container (glass effect) */
 .page-container {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  margin-top: 0;
 }
 
 .page-container h1 {
@@ -120,10 +75,8 @@ html, body, #root {
   border: none;
   background: #222;
   color: white;
-  font-size: 1rem;
 }
 
-/* Buttons */
 .page-container button {
   width: 100%;
   padding: 0.75rem;
@@ -141,7 +94,7 @@ html, body, #root {
   background: linear-gradient(135deg, #0057e7, #003bb5);
 }
 
-/* Chat Assistant Box */
+/* 5. Chat assistant styles */
 .chat-box {
   background: #1a1a1a;
   padding: 1rem;
@@ -153,7 +106,75 @@ html, body, #root {
   margin-bottom: 0.5rem;
 }
 
-/* Footer */
+.chat-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #222;
+  color: white;
+}
+
+.chat-form button {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #06d6a0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 6. Fixed header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+}
+
+.header-content img:first-of-type {
+  height: 40px;
+  width: auto;
+  margin-right: 1rem;
+}
+
+.header-content h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.slogan-image {
+  height: 36px;
+  width: auto;
+  margin-left: auto;
+  filter: drop-shadow(0 0 2px black);
+}
+
+/* 7. Footer */
 footer {
   margin-top: 2rem;
   font-size: 0.8rem;
@@ -161,7 +182,7 @@ footer {
   color: #aaa;
 }
 
-/* Responsive Adjustments */
+/* 8. Responsive */
 @media (max-width: 600px) {
   .page-container {
     padding: 1.5rem;
@@ -175,19 +196,16 @@ footer {
     font-size: 0.95rem;
   }
 
-  .logo-title span {
-    font-size: 1.4rem;
+  .header-content h1 {
+    font-size: 1.2rem;
   }
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .header-content img:first-of-type {
+    height: 36px;
   }
 
-  .header img.cleverit {
-    align-self: flex-end;
-    height: 32px;
+  .slogan-image {
+    height: 30px;
   }
 }
 

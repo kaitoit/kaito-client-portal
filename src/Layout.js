@@ -5,27 +5,25 @@ import './App.css';
 const Layout = ({ children }) => {
   return (
     <>
+      {/* Fixed Header */}
       <header className="header">
-        <div className="logo-title">
-          <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Kaito Logo" />
-          <span>Kaito IT</span>
+        <div className="header-content">
+          <img src="/logo512.png" alt="Kaito IT Logo" />
+          <h1>Kaito IT</h1>
+          {/* Add the clever slogan PNG here */}
+          <img src="/cleverit.png" alt="Clever IT Slogan" className="slogan-image" />
         </div>
-        <img
-          src={process.env.PUBLIC_URL + "/cleverit.png"}
-          alt="Clever IT"
-          className="cleverit"
-        />
       </header>
 
+      {/* Background video */}
       <div className="app-wrapper">
         <video className="background-video" autoPlay muted loop playsInline>
           <source src={process.env.PUBLIC_URL + "/trees.mp4"} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
-        <div className="main-container">
-          {children}
-        </div>
+        {/* Main content */}
+        <div className="main-container">{children}</div>
       </div>
     </>
   );
