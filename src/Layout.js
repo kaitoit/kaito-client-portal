@@ -11,16 +11,15 @@ const Layout = ({ children }) => {
       </video>
 
       <div className="header-container">
-        <div className="logo-header">
-          <img
-            src={process.env.PUBLIC_URL + "/logo512.png"}
-            alt="Kaito IT Logo"
-            className="site-logo"
-            onClick={() => window.location.href = "/"}
-          />
-          <span className="logo-text" onClick={() => window.location.href = "/"}>
-            Kaito IT
-          </span>
+        <div className="header-inner">
+          <div className="logo-header horizontal">
+            <img
+              src={process.env.PUBLIC_URL + "/logo512.png"}
+              alt="Logo"
+              className="site-logo"
+            />
+            <div className="logo-text full-width">Kaito IT</div>
+          </div>
         </div>
       </div>
 
