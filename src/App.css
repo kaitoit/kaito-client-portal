@@ -1,19 +1,21 @@
-/* Reset and Base */
+/* App.css */
+
+/* Base reset and layout */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html, body, #root {
   height: 100%;
-  background-color: #111;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #eee;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0a0a0a;
+  color: #f5f5f7;
   overflow-x: hidden;
 }
 
-/* Background Video */
+/* Background video */
 .background-video {
   position: fixed;
   top: 0;
@@ -21,98 +23,99 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.5;
-} 
+  opacity: 0.35;
+  filter: blur(2px);
+}
 
-/* Layout wrapper */
+/* Layout */
 .app-wrapper {
-  position: relative;    /* Needed to contain positioned children */
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 4rem 2rem;
   min-height: 100vh;
-  z-index: 0;            /* Base stacking context */
 }
 
-/* Main content container */
 .main-container {
-  position: relative;    /* Create new stacking context */
-  z-index: 1;            /* Above background video */
-  background: rgba(0, 0, 0, 0.85);  /* Dark translucent background */
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  max-width: 600px;
   width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  z-index: 1;
 }
 
-/* Page Container - remove background, keep padding and border-radius if you want */
+/* Glass-like content container */
 .page-container {
-  /* Optional: if you want extra padding inside main container */
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Form inputs, buttons */
-input, textarea, select, button {
-  width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: none;
-  background: #222;
-  color: white;
-}
-
-button {
-  font-size: 1rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #3a86ff, #0057e7);
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background: linear-gradient(135deg, #0057e7, #003bb5);
-}
-
-/* Status Badge */
-.status-badge {
-  padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 0.85rem;
-}
-
-.status-ok {
-  background-color: limegreen;
-  color: black;
-}
-
-.status-issue {
-  background-color: orange;
-  color: black;
-}
-
-/* Footer */
-footer {
-  margin-top: 2rem;
-  font-size: 0.8rem;
+.page-container h1 {
+  font-size: 2rem;
+  font-weight: 600;
   text-align: center;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.page-container p {
+  font-size: 1.05rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #d1d1d1;
+}
+
+/* Form styles */
+.page-container input,
+.page-container select,
+.page-container textarea {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+}
+
+.page-container input::placeholder,
+.page-container textarea::placeholder {
   color: #aaa;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .main-container {
-    padding: 1.25rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
+.page-container input:focus,
+.page-container textarea:focus,
+.page-container select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
 }
+
+/* Buttons */
+.page-container button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(to right, #0a84ff, #007aff);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-container button:hover {
+  background: linear-gradient(to right, #007aff, #0051a8);
+}
+
+/* Chat box styles */
+.chat-box {
+  background: rgba(255, 255, 255, 0.04);
+  padd
 
