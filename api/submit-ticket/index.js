@@ -1,19 +1,23 @@
 const { CosmosClient } = require("@azure/cosmos");
+const { randomUUID } = require("crypto");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
-const databaseId = "SupportTickets";
-const containerId = "Tickets";
-
 const client = new CosmosClient({ endpoint, key });
 
-module.exports = async function (context, req) {
-  const { name, email, description, component, priority } = req.body;
+const databaseId = "SupportTickets";  // Make sure this matches your Cosmos DB
+const containerId = "Tickets";        // Make sure this matches your Cosmos DB
 
-  if (!name || !email || !description) {
+module.exports = async function (context, req) {
+  context.log("Received ticket:", req.body);
+
+  const { name, email, subject, description, component, priority, timestamp } = req.body;
+
+  // Validate required fields
+  if (!( (name && email && description) || (subject && description) )) {
     context.res = {
       status: 400,
-      body: "Missing required fields (name, email, or description)",
+      body: "Missing required fields. Please provide either name, email, and description OR subject and description."
     };
     return;
   }
@@ -21,31 +25,38 @@ module.exports = async function (context, req) {
   try {
     const container = client.database(databaseId).container(containerId);
 
+    // Construct ticket data, use provided fields
     const newTicket = {
-      name,
-      email,
+      id: randomUUID(),
+      name: name || null,
+      email: email || null,
+      subject: subject || null,
       description,
       component: component || "general",
       priority: priority || "normal",
       status: "open",
-      submittedAt: new Date().toISOString(),
+      submittedAt: timestamp || new Date().toISOString(),
     };
 
-    const { resource: createdItem } = await container.items.create(newTicket);
+    const { resource: createdItem } = await container.items.create(newTicket, {
+      partitionKey: newTicket.component,
+    });
 
     context.res = {
-      status: 200,
+      status: 201,
       body: {
         message: "Ticket submitted successfully",
         ticketId: createdItem.id,
       },
     };
   } catch (err) {
-    context.log.error("Error submitting ticket:", err.message);
+    context.log.error("Error submitting ticket:", err);
     context.res = {
       status: 500,
-      body: `Server error: ${err.message}`,
+      body: { error: "Failed to submit ticket." },
     };
   }
 };
+
+
 
