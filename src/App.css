@@ -21,6 +21,7 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: -1;
   opacity: 0.65;
   filter: brightness(1.05) contrast(1.05);
   transition: all 0.3s ease;
@@ -31,32 +32,40 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 1rem;
   min-height: 100vh;
+  padding: 0 1rem;
 }
 
 .main-container {
   width: 100%;
   max-width: 640px;
-  margin-top: 2rem;
+  margin: 7rem auto 2rem; /* leaves space for fixed header */
   z-index: 1;
 }
 
-/* Header Section */
+/* Fixed Header Section */
 .header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 4rem 1rem 2rem;
+  z-index: 1000;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding: 1.5rem 1rem;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
+/* Logo and Brand */
 .logo-header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
   background: rgba(255, 255, 255, 0.05);
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   border-radius: 20px;
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -66,15 +75,15 @@ html, body, #root {
 }
 
 .site-logo {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
-  border-radius: 16px;
+  border-radius: 12px;
   transition: transform 0.3s ease;
 }
 
 .logo-text {
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1px;
@@ -90,7 +99,7 @@ html, body, #root {
   color: #66aaff;
 }
 
-/* Card Container */
+/* Page Container */
 .page-container {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(16px);
@@ -199,7 +208,7 @@ html, body, #root {
   background: #05b98d;
 }
 
-/* Service Cards */
+/* Service Status */
 ul {
   list-style: none;
   padding: 0;
@@ -236,16 +245,11 @@ footer {
   color: #888;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Responsive */
 @media (max-width: 600px) {
   .header-container {
-    padding-top: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 
   .logo-header {
@@ -255,13 +259,17 @@ footer {
   }
 
   .site-logo {
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
   }
 
   .logo-text {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     text-align: center;
+  }
+
+  .main-container {
+    margin-top: 6.5rem;
   }
 
   .page-container {
@@ -276,5 +284,4 @@ footer {
     font-size: 0.95rem;
   }
 }
-
 
