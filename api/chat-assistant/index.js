@@ -1,12 +1,9 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config(); // only used locally
-}
-
 const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 const openai = new OpenAIApi(configuration);
 
 module.exports = async function (context, req) {
@@ -41,7 +38,9 @@ module.exports = async function (context, req) {
     context.log("❌ ChatGPT Error:", error.response?.data || error.message || error);
     context.res = {
       status: 500,
-      body: { error: "ChatGPT function failed: " + (error.message || "Unknown error") },
+      body: {
+        error: "ChatGPT function failed: " + (error.message || "Unknown error"),
+      },
     };
   }
 };
