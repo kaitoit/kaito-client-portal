@@ -1,6 +1,4 @@
-/* App.css */
-
-/* Base reset and layout */
+/* Base Reset and Layout */
 * {
   margin: 0;
   padding: 0;
@@ -15,6 +13,7 @@ html, body, #root {
   overflow-x: hidden;
 }
 
+/* Background Video */
 .background-video {
   position: fixed;
   top: 0;
@@ -22,12 +21,13 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: -1;
   opacity: 0.65;
   filter: brightness(1.1) contrast(1.05);
   transition: all 0.3s ease;
 }
 
-/* Layout */
+/* App Layout */
 .app-wrapper {
   display: flex;
   justify-content: center;
@@ -43,7 +43,43 @@ html, body, #root {
   z-index: 1;
 }
 
-/* Glass-like content container */
+/* Logo and Branding */
+.logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease-in;
+  cursor: pointer;
+}
+
+.site-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.25s ease;
+}
+
+.logo-text {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: color 0.3s ease, transform 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+.logo-header:hover .site-logo {
+  transform: scale(1.05);
+}
+
+.logo-header:hover .logo-text {
+  transform: scale(1.03);
+  color: #66aaff;
+}
+
+/* Page Container */
 .page-container {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(16px);
@@ -69,7 +105,7 @@ html, body, #root {
   color: #d1d1d1;
 }
 
-/* Form styles */
+/* Form Fields */
 .page-container input,
 .page-container select,
 .page-container textarea {
@@ -114,7 +150,7 @@ html, body, #root {
   background: linear-gradient(to right, #007aff, #0051a8);
 }
 
-/* Chat box styles */
+/* Chat Box */
 .chat-box {
   background: rgba(255, 255, 255, 0.04);
   padding: 1.5rem;
@@ -128,15 +164,32 @@ html, body, #root {
   margin-bottom: 0.75rem;
 }
 
-/* Footer */
-footer {
-  margin-top: 2.5rem;
-  text-align: center;
-  font-size: 0.85rem;
-  color: #888;
+/* Chat Input */
+.chat-box input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-/* Service list on dashboard */
+.chat-box button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: #06d6a0;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.chat-box button:hover {
+  background: #05b98d;
+}
+
+/* Service Cards */
 ul {
   list-style: none;
   padding: 0;
@@ -165,8 +218,31 @@ li.service-item .status-issue {
   color: #ff9100;
 }
 
+/* Footer */
+footer {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Responsive */
 @media (max-width: 600px) {
+  .site-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .logo-text {
+    font-size: 1.4rem;
+  }
+
   .page-container {
     padding: 2rem 1.5rem;
   }
@@ -179,31 +255,4 @@ li.service-item .status-issue {
     font-size: 0.95rem;
   }
 }
-
-/* Logo styling */
-.logo-wrapper {
-  text-align: center;
-  margin-bottom: 2rem;
-  animation: fadeIn 0.6s ease-in;
-}
-
-.site-logo {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
-  border-radius: 12px;
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
-
-.site-logo:hover {
-  transform: scale(1.05);
-}
-
-/* Optional fade-in */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 

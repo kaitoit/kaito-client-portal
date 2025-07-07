@@ -12,14 +12,18 @@ const Layout = ({ children }) => {
 
       <div className="main-container">
         {/* Logo */}
-        <div className="logo-wrapper">
-          <img
-            src={process.env.PUBLIC_URL + "/logo512.png"}
-            alt="Kaito IT Logo"
-            className="site-logo"
-            onClick={() => window.location.href = "/"}
-          />
-        </div>
+<div className="logo-header">
+  <img
+    src={process.env.PUBLIC_URL + "/logo512.png"}
+    alt="Kaito IT Logo"
+    className="site-logo"
+    onClick={() => window.location.href = "/"}
+  />
+  <span className="logo-text" onClick={() => window.location.href = "/"}>
+    Kaito IT
+  </span>
+</div>
+
 
         {/* Page content */}
         {children}
