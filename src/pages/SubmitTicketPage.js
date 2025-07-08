@@ -41,7 +41,7 @@ export default function SubmitTicketPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("https://polite-island-07ad02510.6.azurewebsites.net/api/submit-ticket", {
+      const response = await fetch("https://polite-island-07ad02510.6.azurestaticapps.net/api/submit-ticket", {
        method: "POST",
        headers: { "Content-Type": "application/json" },
        body: JSON.stringify({ name, email, description, component, priority }),
