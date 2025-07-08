@@ -39,7 +39,7 @@ module.exports = async function (context, req) {
     };
 
     const { resource: createdItem } = await container.items.create(newTicket, {
-      partitionKey: newTicket.component,
+      partitionKey: newTicket.email,
     });
 
     context.res = {
