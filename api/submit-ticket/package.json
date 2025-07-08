@@ -8,8 +8,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@azure/cosmos": "^4.4.1"
-  }
+  },
+  "description": ""
 }
