@@ -230,3 +230,35 @@ footer {
   }
 }
 
+.login-btn,
+.sspr-btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, #3a86ff, #0057e7);
+  color: white;
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #0057e7, #003bb5);
+}
+
+.sspr-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: 1px solid #444;
+}
+
+.sspr-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
