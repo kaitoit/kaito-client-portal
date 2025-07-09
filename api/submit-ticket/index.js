@@ -1,23 +1,56 @@
 const { CosmosClient } = require("@azure/cosmos");
 const { randomUUID } = require("crypto");
+const fetch = require("node-fetch"); // Make sure it's installed or bundled
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const client = new CosmosClient({ endpoint, key });
 
-const databaseId = "SupportTickets";  // Make sure this matches your Cosmos DB
-const containerId = "Tickets";        // Make sure this matches your Cosmos DB
+const databaseId = "SupportTickets";
+const containerId = "Tickets";
+const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
+
+async function notifyTeams(ticket) {
+  if (!teamsWebhookUrl) return;
+
+  const card = {
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    summary: "New Support Ticket",
+    themeColor: "0076D7",
+    title: "🆕 New Ticket Submitted",
+    sections: [
+      {
+        facts: [
+          { name: "Name", value: ticket.name || "N/A" },
+          { name: "Email", value: ticket.email },
+          { name: "Priority", value: ticket.priority || "normal" },
+          { name: "Component", value: ticket.component || "general" },
+          { name: "Submitted", value: new Date().toLocaleString() }
+        ],
+        text: ticket.description
+      }
+    ]
+  };
+
+  try {
+    await fetch(teamsWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(card)
+    });
+  } catch (err) {
+    console.error("Failed to send Teams notification:", err.message);
+  }
+}
 
 module.exports = async function (context, req) {
-  context.log("Received ticket:", req.body);
-
   const { name, email, subject, description, component, priority, timestamp } = req.body;
 
-  // Validate required fields
-  if (!( (name && email && description) || (subject && description) )) {
+  if (!description || !(name && email) && !subject) {
     context.res = {
       status: 400,
-      body: "Missing required fields. Please provide either name, email, and description OR subject and description."
+      body: "Missing required fields."
     };
     return;
   }
@@ -25,7 +58,6 @@ module.exports = async function (context, req) {
   try {
     const container = client.database(databaseId).container(containerId);
 
-    // Construct ticket data, use provided fields
     const newTicket = {
       id: randomUUID(),
       name: name || null,
@@ -36,25 +68,29 @@ module.exports = async function (context, req) {
       priority: priority || "normal",
       status: "open",
       submittedAt: timestamp || new Date().toISOString(),
+      replies: [] // for in-app chatting
     };
 
     const { resource: createdItem } = await container.items.create(newTicket, {
-      partitionKey: newTicket.email,
+      partitionKey: newTicket.email
     });
+
+    await notifyTeams(newTicket);
 
     context.res = {
       status: 201,
       body: {
         message: "Ticket submitted successfully",
-        ticketId: createdItem.id,
-      },
+        ticketId: createdItem.id
+      }
     };
   } catch (err) {
     context.log.error("Error submitting ticket:", err);
     context.res = {
       status: 500,
-      body: { error: "Failed to submit ticket." },
+      body: { error: "Failed to submit ticket." }
     };
   }
 };
+
 
