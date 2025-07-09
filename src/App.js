@@ -21,7 +21,7 @@ export default function App() {
   return (
     <Routes>
       {/* Login Route (does not use Layout) */}
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<Layout><LoginPage /></Layout>} />
 
       {/* Protected Routes inside Layout */}
       <Route element={<Layout />}>
