@@ -7,6 +7,7 @@ import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import SubmitTicketPage from "./pages/SubmitTicketPage";
+import TicketDetailsPage from "./pages/TicketDetailsPage"; // ✅ NEW
 import Layout from "./Layout";
 
 export default function App() {
@@ -40,6 +41,16 @@ export default function App() {
         }
       />
       <Route
+        path="/ticket/:id"  // ✅ NEW
+        element={
+          isAuthenticated ? (
+            <Layout><TicketDetailsPage /></Layout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
         path="/login"
         element={<Layout><LoginPage /></Layout>}
       />
@@ -50,4 +61,5 @@ export default function App() {
     </Routes>
   );
 }
+
 
