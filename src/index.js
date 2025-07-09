@@ -7,17 +7,22 @@ import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from './authConfig';
 import App from './App';
 
+// Create MSAL instance
 const msalInstance = new PublicClientApplication(msalConfig);
 
-// Wait for MSAL to handle redirect response before rendering
-msalInstance.handleRedirectPromise().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </MsalProvider>
-    </React.StrictMode>
-  );
+// ✅ REQUIRED for MSAL v3+: Initialize it
+msalInstance.initialize().then(() => {
+  // ✅ Now safely handle the redirect result
+  msalInstance.handleRedirectPromise().then(() => {
+    // ✅ Now you can render the app
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <React.StrictMode>
+        <MsalProvider instance={msalInstance}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </MsalProvider>
+      </React.StrictMode>
+    );
+  });
 });
