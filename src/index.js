@@ -10,17 +10,21 @@ import "./App.css";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-// Ensure handleRedirectPromise completes before rendering
-msalInstance.initialize().then(() => {
-  msalInstance.handleRedirectPromise().then(() => {
-    ReactDOM.createRoot(document.getElementById("root")).render(
-      <React.StrictMode>
-        <MsalProvider instance={msalInstance}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </MsalProvider>
-      </React.StrictMode>
-    );
-  });
-});
+async function main() {
+  // Ensure handleRedirectPromise completes before render
+  await msalInstance.initialize();
+  await msalInstance.handleRedirectPromise();
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(
+    <React.StrictMode>
+      <MsalProvider instance={msalInstance}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </MsalProvider>
+    </React.StrictMode>
+  );
+}
+
+main();

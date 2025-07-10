@@ -12,7 +12,7 @@ import Layout from "./Layout";
 
 export default function App() {
   const { accounts, inProgress } = useMsal();
-  const isAuthenticated = accounts.length > 0;
+  const isAuthenticated = accounts && accounts.length > 0;
 
   if (inProgress !== "none") {
     return <div className="loading-indicator">Loading...</div>;
@@ -58,4 +58,3 @@ export default function App() {
     </Routes>
   );
 }
-
