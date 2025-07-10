@@ -17,27 +17,33 @@ export default function Layout({ children }) {
     navigate("/");
   };
 
+  const username = accounts[0]?.username || "User";
+
   return (
     <>
-      {/* Background video */}
       <video autoPlay muted loop className="background-video">
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* Fixed header */}
       <header className="header">
         <div className="header-content">
-          <img src={logo} alt="Kaito IT" onClick={handleDashboard} style={{ cursor: "pointer" }} />
+          <img
+            src={logo}
+            alt="Kaito IT"
+            onClick={handleDashboard}
+            style={{ cursor: "pointer" }}
+          />
           <h1>Kaito IT Portal</h1>
-          {slogan && <img src={slogan} alt="Slogan" className="slogan-image" />}
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "1rem" }}>
+            <span style={{ color: "#ccc", fontSize: "0.9rem" }}>{username}</span>
+            <button onClick={handleLogout} className="sspr-btn">Logout</button>
+          </div>
         </div>
       </header>
 
-      {/* Main content area */}
       <div className="app-wrapper">
         <div className="main-container">{children}</div>
       </div>
     </>
   );
 }
-
