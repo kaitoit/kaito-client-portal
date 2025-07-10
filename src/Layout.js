@@ -3,7 +3,6 @@ import { useMsal } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
 import bgVideo from "./assets/trees.mp4"; // Adjust path if needed
 import logo from "./assets/logo512.png"; // Adjust if different
-import slogan from "./assets/cleverit.png";   // Optional
 
 export default function Layout({ children }) {
   const { instance, accounts } = useMsal();
