@@ -1,59 +1,42 @@
 import React from "react";
 import { useMsal } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
+import bgVideo from "./assets/trees.mp4"; // Adjust path if needed
+import logo from "./assets/kaito-logo.png"; // Adjust if different
+import slogan from "./assets/slogan.png";   // Optional
 
 export default function Layout({ children }) {
-  const { accounts, instance } = useMsal();
+  const { instance, accounts } = useMsal();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    instance.logoutRedirect().catch(e => {
-      console.error(e);
-      // fallback logout method or notification
-    });
+    instance.logoutRedirect();
+  };
+
+  const handleDashboard = () => {
+    navigate("/");
   };
 
   return (
-    <div className="app-wrapper">
+    <>
       {/* Background video */}
-      <video autoPlay muted loop className="background-video" playsInline>
-        <source src="/trees.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
+      <video autoPlay muted loop className="background-video">
+        <source src={bgVideo} type="video/mp4" />
       </video>
 
       {/* Fixed header */}
       <header className="header">
         <div className="header-content">
-          <img src="/logo.png" alt="Kaito IT Logo" />
-          <h1>Kaito IT Client Portal</h1>
-
-          {/* Show user email if logged in */}
-          {accounts.length > 0 && (
-            <>
-              <div style={{ marginLeft: "auto", color: "#ccc", fontWeight: "bold" }}>
-                {accounts[0].username}
-              </div>
-              <button
-                onClick={handleLogout}
-                style={{
-                  marginLeft: "1rem",
-                  padding: "0.4rem 1rem",
-                  background: "#c0392b",
-                  border: "none",
-                  borderRadius: "6px",
-                  color: "white",
-                  cursor: "pointer",
-                }}
-              >
-                Logout
-              </button>
-            </>
-          )}
+          <img src={logo} alt="Kaito IT" onClick={handleDashboard} style={{ cursor: "pointer" }} />
+          <h1>Kaito IT Portal</h1>
+          {slogan && <img src={slogan} alt="Slogan" className="slogan-image" />}
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="main-container">{children}</main>
-    </div>
+      {/* Main content area */}
+      <div className="app-wrapper">
+        <div className="main-container">{children}</div>
+      </div>
+    </>
   );
 }
