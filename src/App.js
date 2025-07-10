@@ -1,26 +1,26 @@
 // src/App.js
-import './App.css';
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useMsal } from '@azure/msal-react';
+import "./App.css";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useMsal } from "@azure/msal-react";
 
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import SubmitTicketPage from './pages/SubmitTicketPage';
-import TicketDetailsPage from './pages/TicketDetailsPage';
-import Layout from './Layout';
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import SubmitTicketPage from "./pages/SubmitTicketPage";
+import TicketDetailsPage from "./pages/TicketDetailsPage";
+import Layout from "./Layout";
 
 export default function App() {
   const { accounts, inProgress } = useMsal();
+  const isAuthenticated = accounts.length > 0;
 
-  const isAuthenticated = accounts && accounts.length > 0;
-
-  if (inProgress !== 'none') {
+  if (inProgress !== "none") {
     return <div className="loading-indicator">Loading...</div>;
   }
 
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route
         path="/"
         element={
@@ -51,7 +51,6 @@ export default function App() {
           )
         }
       />
-      <Route path="/login" element={<LoginPage />} />
       <Route
         path="*"
         element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
@@ -59,3 +58,4 @@ export default function App() {
     </Routes>
   );
 }
+
