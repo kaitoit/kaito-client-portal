@@ -1,31 +1,96 @@
-// src/index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { MsalProvider } from "@azure/msal-react";
-import { PublicClientApplication } from "@azure/msal-browser";
-import App from "./App";
-import { msalConfig } from "./authConfig";
-import "./App.css";
+const { CosmosClient } = require("@azure/cosmos");
+const { randomUUID } = require("crypto");
+const fetch = require("node-fetch"); // Make sure it's installed or bundled
 
-const msalInstance = new PublicClientApplication(msalConfig);
+const endpoint = process.env.COSMOS_DB_ENDPOINT;
+const key = process.env.COSMOS_DB_KEY;
+const client = new CosmosClient({ endpoint, key });
 
-async function main() {
-  await msalInstance.initialize();
-  await msalInstance.handleRedirectPromise();
+const databaseId = "SupportTickets";
+const containerId = "Tickets";
+const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
 
-  const root = ReactDOM.createRoot(document.getElementById("root"));
-  root.render(
-    <React.StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </MsalProvider>
-    </React.StrictMode>
-  );
+async function notifyTeams(ticket) {
+  if (!teamsWebhookUrl) return;
+
+  const card = {
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    summary: "New Support Ticket",
+    themeColor: "0076D7",
+    title: "🆕 New Ticket Submitted",
+    sections: [
+      {
+        facts: [
+          { name: "Name", value: ticket.name || "N/A" },
+          { name: "Email", value: ticket.email },
+          { name: "Priority", value: ticket.priority || "normal" },
+          { name: "Component", value: ticket.component || "general" },
+          { name: "Submitted", value: new Date().toLocaleString() }
+        ],
+        text: ticket.description
+      }
+    ]
+  };
+
+  try {
+    await fetch(teamsWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(card)
+    });
+  } catch (err) {
+    console.error("Failed to send Teams notification:", err.message);
+  }
 }
 
-main();
+module.exports = async function (context, req) {
+  const { name, email, subject, description, component, priority, timestamp } = req.body;
+
+  if (!description || !(name && email) && !subject) {
+    context.res = {
+      status: 400,
+      body: "Missing required fields."
+    };
+    return;
+  }
+
+  try {
+    const container = client.database(databaseId).container(containerId);
+
+    const newTicket = {
+      id: randomUUID(),
+      name: name || null,
+      email: email || null,
+      subject: subject || null,
+      description,
+      component: component || "general",
+      priority: priority || "normal",
+      status: "open",
+      submittedAt: timestamp || new Date().toISOString(),
+      replies: [] // for in-app chatting
+    };
+
+    const { resource: createdItem } = await container.items.create(newTicket, {
+      partitionKey: newTicket.email
+    });
+
+    await notifyTeams(newTicket);
+
+    context.res = {
+      status: 201,
+      body: {
+        message: "Ticket submitted successfully",
+        ticketId: createdItem.id
+      }
+    };
+  } catch (err) {
+    context.log.error("Error submitting ticket:", err);
+    context.res = {
+      status: 500,
+      body: { error: "Failed to submit ticket." }
+    };
+  }
+};
 
 
