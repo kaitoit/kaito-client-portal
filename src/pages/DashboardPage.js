@@ -1,7 +1,7 @@
 // src/pages/DashboardPage.jsx
 import React, { useEffect, useState } from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import StatusBadge from "../components/StatusBadge";
 import "../App.css";
@@ -17,38 +17,54 @@ export default function DashboardPage() {
     { name: "Remote Access", description: "Connecting from home or offsite", status: "Issue" },
   ]);
 
+  const [tickets, setTickets] = useState([]);
+
   const hasIssue = services.some(service => service.status !== "OK");
 
   useEffect(() => {
-    if (!isAuthenticated) navigate("/login", { replace: true });
+    if (!isAuthenticated) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    // Load support tickets from API
+    const fetchTickets = async () => {
+      try {
+        const res = await fetch("/api/get-tickets");
+        const data = await res.json();
+        setTickets(data);
+      } catch (err) {
+        console.error("Failed to load tickets:", err);
+      }
+    };
+
+    fetchTickets();
   }, [isAuthenticated, navigate]);
 
   return (
     <PageWrapper>
       <h1>Kaito IT System Dashboard</h1>
       <p>
-        {hasIssue
-          ? <span style={{ color: "orange", fontWeight: "bold" }}>⚠️ Some systems are experiencing issues.</span>
-          : <span style={{ color: "limegreen", fontWeight: "bold" }}>✅ All systems are operational.</span>}
+        {hasIssue ? (
+          <span style={{ color: "orange", fontWeight: "bold" }}>
+           ⚠️ Some systems are experiencing issues.
+          </span>
+        ) : (
+          <span style={{ color: "limegreen", fontWeight: "bold" }}>
+            ✅ All systems are operational.
+          </span>
+        )}
       </p>
 
+      {/* SYSTEM STATUS */}
       <div style={{ marginTop: "2rem", textAlign: "left" }}>
-        <h2 style={{ fontSize: "1.2rem", color: "#66aaff", marginBottom: "1rem" }}>Service Status Overview</h2>
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <h2 className="section-title">Service Status Overview</h2>
+        <ul className="service-list">
           {services.map((service, index) => (
-            <li key={index} style={{
-              backgroundColor: "#1c1c1c",
-              padding: "1rem",
-              borderRadius: "8px",
-              marginBottom: "1rem",
-              border: "1px solid #333",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
+            <li key={index} className="service-item">
               <div>
-                <div style={{ fontWeight: "bold" }}>{service.name}</div>
-                <div style={{ color: "#aaa", fontSize: "0.85rem" }}>{service.description}</div>
+                <div className="service-name">{service.name}</div>
+                <div className="service-desc">{service.description}</div>
               </div>
               <StatusBadge status={service.status} />
             </li>
@@ -56,7 +72,28 @@ export default function DashboardPage() {
         </ul>
       </div>
 
-      <button onClick={() => navigate("/submit")}>Submit Support Request</button>
+      {/* SUPPORT TICKETS */}
+      <div style={{ marginTop: "3rem", textAlign: "left" }}>
+        <h2 className="section-title">Submitted Support Tickets</h2>
+        {tickets.length === 0 ? (
+          <p>No tickets submitted yet.</p>
+        ) : (
+          <div className="ticket-list">
+            {tickets.map(ticket => (
+              <div key={ticket.id} className="ticket-card">
+                <h3>{ticket.subject || "No subject"}</h3>
+                <p>{ticket.description}</p>
+                <Link to={`/ticket/${ticket.id}`}>View & Reply</Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button onClick={() => navigate("/submit")} style={{ marginTop: "2rem" }}>
+        Submit Support Request
+      </button>
+
       <footer>© 2025 Kaito IT</footer>
     </PageWrapper>
   );

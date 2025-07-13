@@ -41,6 +41,16 @@ export default function App() {
           )
         }
       />
+<Route
+  path="/ticket/:id"
+  element={
+    isAuthenticated ? (
+      <Layout><TicketDetailsPageWrapper /></Layout>
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+/>
       <Route
         path="/ticket/:id"
         element={
@@ -58,3 +68,8 @@ export default function App() {
     </Routes>
   );
 }
+
+
+
+
+
