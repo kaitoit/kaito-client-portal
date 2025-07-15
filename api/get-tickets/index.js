@@ -11,21 +11,21 @@ module.exports = async function (context, req) {
   try {
     const container = client.database(databaseId).container(containerId);
 
-    const query = {
+    const querySpec = {
       query: "SELECT * FROM c ORDER BY c.submittedAt DESC"
     };
 
-    const { resources: tickets } = await container.items.query(query).fetchAll();
+    const { resources: tickets } = await container.items.query(querySpec).fetchAll();
 
     context.res = {
       status: 200,
       body: tickets
     };
   } catch (err) {
-    context.log("Error fetching tickets:", err.message);
+    context.log.error("Error retrieving tickets:", err.message);
     context.res = {
       status: 500,
-      body: "Server error while fetching tickets"
+      body: { error: "Failed to retrieve tickets" }
     };
   }
 };
