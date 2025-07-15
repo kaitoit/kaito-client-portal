@@ -17,10 +17,26 @@ module.exports = async function (context, req) {
 
   try {
     const container = client.database(databaseId).container(containerId);
-    const { resource } = await container.item(ticketId, ticketId).read(); // assuming /id as partitionKey
-    context.res = { status: 200, body: resource };
+
+    // Query using ticket ID, because partitionKey is 'email'
+    const query = {
+      query: "SELECT * FROM c WHERE c.id = @id",
+      parameters: [{ name: "@id", value: ticketId }],
+    };
+
+    const { resources } = await container.items.query(query).fetchAll();
+
+    if (!resources || resources.length === 0) {
+      context.res = { status: 404, body: "Ticket not found" };
+      return;
+    }
+
+    context.res = {
+      status: 200,
+      body: resources[0],
+    };
   } catch (err) {
     context.log("Error reading ticket:", err.message);
-    context.res = { status: 404, body: "Ticket not found" };
+    context.res = { status: 500, body: "Server error while fetching ticket" };
   }
 };

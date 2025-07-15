@@ -6,17 +6,32 @@ import TicketDetailsPage from "./TicketDetailsPage";
 export default function TicketDetailsPageWrapper() {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchTicket = async () => {
-      const res = await fetch(`/api/get-ticket?id=${id}`);
-      const data = await res.json();
-      setTicket(data);
+      try {
+        const res = await fetch(`/api/get-ticket?id=${id}`);
+        if (!res.ok) {
+          throw new Error("Failed to load ticket");
+        }
+        const data = await res.json();
+        setTicket(data);
+      } catch (err) {
+        console.error("Error fetching ticket:", err);
+        setError("Could not load ticket details.");
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchTicket();
   }, [id]);
 
-  if (!ticket) return <p style={{ color: "white" }}>Loading ticket details...</p>;
+  if (loading) return <div className="page-container">Loading ticket...</div>;
+  if (error) return <div className="page-container">{error}</div>;
+  if (!ticket) return <div className="page-container">Ticket not found.</div>;
 
   return <TicketDetailsPage ticket={ticket} />;
 }
