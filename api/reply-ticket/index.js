@@ -1,16 +1,15 @@
 const { CosmosClient } = require("@azure/cosmos");
 const { v4: uuidv4 } = require("uuid");
-const fetch = require("node-fetch"); // For Teams webhook notification if needed
+const fetch = require("node-fetch");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
-const client = new CosmosClient({ endpoint, key });
-
 const databaseId = "SupportTickets";
-const repliesContainerId = "Replies";
 const ticketsContainerId = "Tickets";
-
+const repliesContainerId = "Replies";
 const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
+
+const client = new CosmosClient({ endpoint, key });
 
 module.exports = async function (context, req) {
   const { ticketId, sender, message } = req.body;
@@ -34,25 +33,24 @@ module.exports = async function (context, req) {
       timestamp: new Date().toISOString(),
     };
 
-    await repliesContainer.items.create(reply, {
-      partitionKey: ticketId,
-    });
+    await repliesContainer.items.create(reply, { partitionKey: ticketId });
 
-    // Optional: update ticket status to "responded"
+    // Optionally update ticket status
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
-    const ticketQuery = {
-      query: "SELECT * FROM c WHERE c.id = @ticketId",
-      parameters: [{ name: "@ticketId", value: ticketId }],
-    };
+    const { resources: tickets } = await ticketsContainer
+      .items.query({
+        query: "SELECT * FROM c WHERE c.id = @id",
+        parameters: [{ name: "@id", value: ticketId }],
+      })
+      .fetchAll();
 
-    const { resources: tickets } = await ticketsContainer.items.query(ticketQuery).fetchAll();
     if (tickets.length > 0) {
       const ticket = tickets[0];
       ticket.status = "responded";
-      await ticketsContainer.item(ticket.id, ticket.email).replace(ticket);
+      await ticketsContainer.items.upsert(ticket);
     }
 
-    // Notify Teams if webhook URL configured
+    // Optional: Notify Teams
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
