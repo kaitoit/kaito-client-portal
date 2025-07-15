@@ -1,5 +1,4 @@
 // api/get-ticket/index.js
-import TicketDetailsPageWrapper from "./pages/TicketDetailsPageWrapper";
 const { CosmosClient } = require("@azure/cosmos");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
