@@ -7,7 +7,7 @@ import { useMsal } from "@azure/msal-react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import SubmitTicketPage from "./pages/SubmitTicketPage";
-import TicketDetailsPage from "./pages/TicketDetailsPage";
+import TicketDetailsPageWrapper from "./pages/TicketDetailsPageWrapper"; // <- assumed you renamed it here
 import Layout from "./Layout";
 
 export default function App() {
@@ -21,6 +21,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+
       <Route
         path="/"
         element={
@@ -31,6 +32,7 @@ export default function App() {
           )
         }
       />
+
       <Route
         path="/submit"
         element={
@@ -41,26 +43,18 @@ export default function App() {
           )
         }
       />
-<Route
-  path="/ticket/:id"
-  element={
-    isAuthenticated ? (
-      <Layout><TicketDetailsPageWrapper /></Layout>
-    ) : (
-      <Navigate to="/login" replace />
-    )
-  }
-/>
+
       <Route
         path="/ticket/:id"
         element={
           isAuthenticated ? (
-            <Layout><TicketDetailsPage /></Layout>
+            <Layout><TicketDetailsPageWrapper /></Layout> // ✅ Use the wrapper here
           ) : (
             <Navigate to="/login" replace />
           )
         }
       />
+
       <Route
         path="*"
         element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
@@ -68,7 +62,6 @@ export default function App() {
     </Routes>
   );
 }
-
 
 
 
