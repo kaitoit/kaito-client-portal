@@ -1,4 +1,3 @@
-// api/get-ticket/index.js
 const { CosmosClient } = require("@azure/cosmos");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
@@ -9,34 +8,34 @@ const databaseId = "SupportTickets";
 const containerId = "Tickets";
 
 module.exports = async function (context, req) {
-  const ticketId = req.query.id;
-  if (!ticketId) {
-    context.res = { status: 400, body: "Ticket ID is required" };
+  // For demo, get email from query string
+  const userEmail = req.query.email;
+
+  if (!userEmail) {
+    context.res = { status: 400, body: "User email is required" };
     return;
   }
 
   try {
     const container = client.database(databaseId).container(containerId);
 
-    // Query using ticket ID, because partitionKey is 'email'
-    const query = {
-      query: "SELECT * FROM c WHERE c.id = @id",
-      parameters: [{ name: "@id", value: ticketId }],
+    // Query tickets by email partition key
+    const querySpec = {
+      query: "SELECT * FROM c WHERE c.email = @userEmail",
+      parameters: [{ name: "@userEmail", value: userEmail }],
     };
 
-    const { resources } = await container.items.query(query).fetchAll();
-
-    if (!resources || resources.length === 0) {
-      context.res = { status: 404, body: "Ticket not found" };
-      return;
-    }
+    const { resources: tickets } = await container.items.query(querySpec).fetchAll();
 
     context.res = {
       status: 200,
-      body: resources[0],
+      body: tickets,
     };
   } catch (err) {
-    context.log("Error reading ticket:", err.message);
-    context.res = { status: 500, body: "Server error while fetching ticket" };
+    context.log.error("Error fetching tickets:", err.message);
+    context.res = {
+      status: 500,
+      body: "Server error while fetching tickets",
+    };
   }
 };

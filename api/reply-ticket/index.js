@@ -1,18 +1,16 @@
 const { CosmosClient } = require("@azure/cosmos");
 const { v4: uuidv4 } = require("uuid");
-const fetch = require("node-fetch"); // Needed for Teams webhook
+const fetch = require("node-fetch"); // For Teams webhook notification if needed
 
-// Cosmos DB setup
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
-const databaseId = "SupportTickets";
-const ticketsContainerId = "Tickets";
-const repliesContainerId = "Replies";
-
-// Teams webhook (stored as environment variable)
-const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
-
 const client = new CosmosClient({ endpoint, key });
+
+const databaseId = "SupportTickets";
+const repliesContainerId = "Replies";
+const ticketsContainerId = "Tickets";
+
+const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
 
 module.exports = async function (context, req) {
   const { ticketId, sender, message } = req.body;
@@ -40,16 +38,21 @@ module.exports = async function (context, req) {
       partitionKey: ticketId,
     });
 
-    // Optional: Update ticket status to 'responded'
+    // Optional: update ticket status to "responded"
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
-    const { resource: ticket } = await ticketsContainer.item(ticketId, reply.ticketId).read();
+    const ticketQuery = {
+      query: "SELECT * FROM c WHERE c.id = @ticketId",
+      parameters: [{ name: "@ticketId", value: ticketId }],
+    };
 
-    if (ticket) {
+    const { resources: tickets } = await ticketsContainer.items.query(ticketQuery).fetchAll();
+    if (tickets.length > 0) {
+      const ticket = tickets[0];
       ticket.status = "responded";
-      await ticketsContainer.item(ticketId, ticket.component || "general").replace(ticket);
+      await ticketsContainer.item(ticket.id, ticket.email).replace(ticket);
     }
 
-    // Notify Microsoft Teams
+    // Notify Teams if webhook URL configured
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
@@ -75,4 +78,5 @@ module.exports = async function (context, req) {
     };
   }
 };
+
 
