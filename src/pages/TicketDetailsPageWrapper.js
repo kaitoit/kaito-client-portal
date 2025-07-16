@@ -10,31 +10,26 @@ export default function TicketDetailsPageWrapper() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchTicketAndReplies = async () => {
+    const fetchData = async () => {
       try {
-        const [ticketRes, repliesRes] = await Promise.all([
-          fetch(`/api/get-ticket?id=${id}`),
-          fetch(`/api/get-replies?ticketId=${id}`)
-        ]);
-
-        if (!ticketRes.ok || !repliesRes.ok) {
-          throw new Error("Failed to fetch ticket or replies");
-        }
-
+        const ticketRes = await fetch(`/api/get-ticket?id=${id}`);
+        if (!ticketRes.ok) throw new Error("Ticket not found");
         const ticketData = await ticketRes.json();
-        const repliesData = await repliesRes.json();
+
+        const repliesRes = await fetch(`/api/get-replies?ticketId=${id}`);
+        const repliesData = repliesRes.ok ? await repliesRes.json() : [];
 
         setTicket(ticketData);
         setReplies(repliesData);
       } catch (err) {
-        console.error("Error fetching ticket or replies:", err);
+        console.error(err);
         setError("Could not load ticket details.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTicketAndReplies();
+    fetchData();
   }, [id]);
 
   if (loading) return <div className="page-container">Loading ticket...</div>;
