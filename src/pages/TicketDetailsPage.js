@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-export default function TicketDetailsPage({ ticket }) {
-  const [replies, setReplies] = useState(ticket.replies || []);
+export default function TicketDetailsPage({ ticket, initialReplies = [] }) {
+  const [replies, setReplies] = useState(initialReplies);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
 
