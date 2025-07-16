@@ -5,35 +5,35 @@ export default function TicketDetailsPage({ ticket }) {
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
 
-  const sendReply = async (e) => {
-    e.preventDefault();
-    setSending(true);
+const sendReply = async (e) => {
+  e.preventDefault();
+  setSending(true);
 
-    const res = await fetch("/api/reply-ticket", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ticketId: ticket.id,
-        email: ticket.email,
-        sender: "IT Staff",
-        message: replyText,
-      }),
-    });
+  const res = await fetch("/api/reply-ticket", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ticketId: ticket.id,
+      sender: "IT Staff", // this is what your backend expects
+      message: replyText,
+    }),
+  });
 
-    if (res.ok) {
-      const newReply = {
-        sender: "IT Staff",
-        message: replyText,
-        timestamp: new Date().toISOString(),
-      };
-      setReplies([...replies, newReply]);
-      setReplyText("");
-    } else {
-      alert("Failed to send reply.");
-    }
+  if (res.ok) {
+    const newReply = {
+      sender: "IT Staff",
+      message: replyText,
+      timestamp: new Date().toISOString(),
+    };
+    setReplies([...replies, newReply]);
+    setReplyText("");
+  } else {
+    const err = await res.json().catch(() => ({}));
+    alert("Failed to send reply. " + (err?.error || ""));
+  }
 
-    setSending(false);
-  };
+  setSending(false);
+};
 
   return (
     <div className="page-container">
