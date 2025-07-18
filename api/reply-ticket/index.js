@@ -14,6 +14,8 @@ const client = new CosmosClient({ endpoint, key });
 module.exports = async function (context, req) {
   const { ticketId, sender, message, email } = req.body;
 
+  context.log("Received reply-ticket request:", { ticketId, sender, message, email });
+
   if (!ticketId || !sender || !message || !email) {
     context.res = {
       status: 400,
@@ -25,7 +27,6 @@ module.exports = async function (context, req) {
   try {
     const repliesContainer = client.database(databaseId).container(repliesContainerId);
 
-    // Create the reply document
     const reply = {
       id: uuidv4(),
       ticketId,
@@ -34,32 +35,28 @@ module.exports = async function (context, req) {
       timestamp: new Date().toISOString(),
     };
 
-    // Insert reply with partitionKey = ticketId (correct for Replies container)
+    context.log("Creating reply document:", reply);
     await repliesContainer.items.create(reply, { partitionKey: ticketId });
 
-    // Now update ticket status - must provide partitionKey = email for Tickets container
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
 
-    // Query ticket by id using partitionKey email
-    const { resources: tickets } = await ticketsContainer
-      .items.query(
-        {
-          query: "SELECT * FROM c WHERE c.id = @id",
-          parameters: [{ name: "@id", value: ticketId }],
-        },
-        { partitionKey: email }
-      )
-      .fetchAll();
+    // Read the ticket item directly by id and partition key (email)
+    context.log(`Reading ticket by id=${ticketId} and partitionKey(email)=${email}`);
+    const ticketResponse = await ticketsContainer.item(ticketId, email).read();
 
-    if (tickets.length > 0) {
-      const ticket = tickets[0];
-      ticket.status = "responded";
-
-      // Upsert ticket with partitionKey = email
-      await ticketsContainer.items.upsert(ticket, { partitionKey: email });
+    if (!ticketResponse.resource) {
+      context.log("Ticket not found for update");
+      context.res = { status: 404, body: "Ticket not found" };
+      return;
     }
 
-    // Optional: Send notification to Teams
+    const ticket = ticketResponse.resource;
+    ticket.status = "responded";
+
+    context.log("Updating ticket status to responded");
+    await ticketsContainer.items.upsert(ticket, { partitionKey: email });
+
+    // Optional: Notify Teams
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
@@ -68,6 +65,7 @@ module.exports = async function (context, req) {
           text: `💬 New reply on ticket **${ticketId}** from **${sender}**:\n\n${message}`,
         }),
       });
+      context.log("Teams notification sent");
     }
 
     context.res = {
@@ -78,12 +76,11 @@ module.exports = async function (context, req) {
       },
     };
   } catch (err) {
-    context.log.error("Error saving reply:", err.message);
+    context.log.error("Error saving reply or updating ticket:", err);
     context.res = {
       status: 500,
-      body: { error: "Server error while posting reply" },
+      body: { error: "Server error while posting reply", details: err.message },
     };
   }
 };
-
 
