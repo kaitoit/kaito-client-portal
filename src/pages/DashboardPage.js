@@ -1,10 +1,21 @@
 // src/pages/DashboardPage.jsx
 import React, { useEffect, useState } from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
-import { useNavigate, Link } from "react-router-dom";
-import PageWrapper from "../components/PageWrapper";
-import StatusBadge from "../components/StatusBadge";
-import "../App.css";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+
+import {
+  Typography,
+  Box,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
+  Button,
+  Stack,
+  Alert,
+  Link,
+} from "@mui/material";
 
 export default function DashboardPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -16,10 +27,9 @@ export default function DashboardPage() {
     { name: "Device Security", description: "Antivirus, updates, and compliance", status: "OK" },
     { name: "Remote Access", description: "Connecting from home or offsite", status: "Issue" },
   ]);
-
   const [tickets, setTickets] = useState([]);
 
-  const hasIssue = services.some(service => service.status !== "OK");
+  const hasIssue = services.some((service) => service.status !== "OK");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -27,7 +37,6 @@ export default function DashboardPage() {
       return;
     }
 
-    // Load support tickets from API
     const fetchTickets = async () => {
       try {
         const res = await fetch("/api/get-tickets");
@@ -42,62 +51,91 @@ export default function DashboardPage() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <PageWrapper>
-      <h1>Kaito IT System Dashboard</h1>
-      <p>
-        {hasIssue ? (
-          <span style={{ color: "orange", fontWeight: "bold" }}>
-           ⚠️ Some systems are experiencing issues.
-          </span>
-        ) : (
-          <span style={{ color: "limegreen", fontWeight: "bold" }}>
-            ✅ All systems are operational.
-          </span>
-        )}
-      </p>
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Kaito IT System Dashboard
+      </Typography>
 
-      {/* SYSTEM STATUS */}
-      <div style={{ marginTop: "2rem", textAlign: "left" }}>
-        <h2 className="section-title">Service Status Overview</h2>
-        <ul className="service-list">
-          {services.map((service, index) => (
-            <li key={index} className="service-item">
-              <div>
-                <div className="service-name">{service.name}</div>
-                <div className="service-desc">{service.description}</div>
-              </div>
-              <StatusBadge status={service.status} />
-            </li>
+      {hasIssue ? (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+         ⚠️ Some systems are experiencing issues.
+        </Alert>
+      ) : (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          ✅ All systems are operational.
+        </Alert>
+      )}
+
+      {/* Service Status */}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          Service Status Overview
+        </Typography>
+        <List>
+          {services.map((service, i) => (
+            <ListItem
+              key={i}
+              secondaryAction={
+                <Chip
+                  label={service.status}
+                  color={service.status === "OK" ? "success" : "warning"}
+                  size="small"
+                />
+              }
+            >
+              <ListItemText
+                primary={service.name}
+                secondary={service.description}
+              />
+            </ListItem>
           ))}
-        </ul>
-      </div>
+        </List>
+      </Paper>
 
-      {/* SUPPORT TICKETS */}
-      <div style={{ marginTop: "3rem", textAlign: "left" }}>
-        <h2 className="section-title">Submitted Support Tickets</h2>
+      {/* Support Tickets */}
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          Submitted Support Tickets
+        </Typography>
         {tickets.length === 0 ? (
-          <p>No tickets submitted yet.</p>
+          <Typography>No tickets submitted yet.</Typography>
         ) : (
-          <div className="ticket-list">
-            {tickets.map(ticket => (
-              <div key={ticket.id} className="ticket-card">
-                <h3>{ticket.subject || "No subject"}</h3>
-                <p>{ticket.description}</p>
-                <Link to={`/ticket/${ticket.id}?email=${encodeURIComponent(ticket.email)}`}>
+          <Stack spacing={2}>
+            {tickets.map((ticket) => (
+              <Paper
+                key={ticket.id}
+                variant="outlined"
+                sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}
+              >
+                <Typography variant="subtitle1" fontWeight="bold">
+                  {ticket.subject || "No subject"}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  {ticket.description}
+                </Typography>
+                <Link
+                  component={RouterLink}
+                  to={`/ticket/${ticket.id}`}
+                  underline="hover"
+                  sx={{ fontWeight: "medium" }}
+                >
                   View & Reply
                 </Link>
-              </div>
+              </Paper>
             ))}
-          </div>
+          </Stack>
         )}
-      </div>
+      </Box>
 
-      <button onClick={() => navigate("/submit")} style={{ marginTop: "2rem" }}>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mt: 4 }}
+        onClick={() => navigate("/submit")}
+      >
         Submit Support Request
-      </button>
-
-      <footer>© 2025 Kaito IT</footer>
-    </PageWrapper>
+      </Button>
+    </Box>
   );
 }
 

@@ -1,7 +1,20 @@
+// src/pages/SubmitTicketPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
 
 export default function SubmitTicketPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -19,7 +32,6 @@ export default function SubmitTicketPage() {
   const [chatHistory, setChatHistory] = useState([]);
   const [chatLoading, setChatLoading] = useState(false);
 
-  // Ref for chat box container to enable auto scroll
   const chatBoxRef = useRef(null);
 
   useEffect(() => {
@@ -28,7 +40,6 @@ export default function SubmitTicketPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Auto-scroll chat box to bottom when chatHistory or loading changes
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -41,12 +52,11 @@ export default function SubmitTicketPage() {
     setMessage(null);
 
     try {
-      const response = await fetch("https://polite-island-07ad02510.6.azurestaticapps.net/api/submit-ticket", {
-       method: "POST",
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ name, email, description, component, priority }),
-    });
-
+      const response = await fetch("/api/submit-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, description, component, priority }),
+      });
 
       if (response.ok) {
         setMessage("✅ Ticket submitted successfully.");
@@ -99,72 +109,153 @@ export default function SubmitTicketPage() {
   };
 
   return (
-    <div className="page-container">
-      <h1>Submit a Support Ticket</h1>
-      <p>Fill out the form below to create a new support request.</p>
+    <Box
+      sx={{
+        maxWidth: 700,
+        margin: "2rem auto",
+        p: 3,
+        bgcolor: "background.paper",
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Submit a Support Ticket
+      </Typography>
+      <Typography mb={3}>Fill out the form below to create a new support request.</Typography>
 
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Your Name" value={name} onChange={(e) => setName(e.target.value)} required />
-        <input type="email" placeholder="Your Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <textarea
-          placeholder="Describe your issue..."
-          rows="5"
+      <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off" sx={{ mb: 3 }}>
+        <TextField
+          label="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
+        <TextField
+          label="Your Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          required
+          margin="normal"
+        />
+        <TextField
+          label="Describe your issue..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          fullWidth
           required
+          multiline
+          rows={5}
+          margin="normal"
         />
-        <input
-          type="text"
-          placeholder="Component (optional)"
+        <TextField
+          label="Component (optional)"
           value={component}
           onChange={(e) => setComponent(e.target.value)}
+          fullWidth
+          margin="normal"
         />
-        <label htmlFor="priority">Priority:</label>
-        <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
-          <option value="normal">Normal</option>
-          <option value="high">High</option>
-        </select>
-        <button type="submit" disabled={submitting}>
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="priority-label">Priority</InputLabel>
+          <Select
+            labelId="priority-label"
+            value={priority}
+            label="Priority"
+            onChange={(e) => setPriority(e.target.value)}
+          >
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="high">High</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={submitting}
+          fullWidth
+          size="large"
+          sx={{ mt: 2 }}
+        >
           {submitting ? "Submitting..." : "Submit Ticket"}
-        </button>
-      </form>
+        </Button>
+      </Box>
 
       {message && (
-        <p style={{ marginTop: "1rem", fontWeight: "bold", whiteSpace: "pre-wrap" }}>{message}</p>
+        <Typography
+          variant="body1"
+          color={message.startsWith("✅") ? "success.main" : "error.main"}
+          sx={{ fontWeight: "bold", whiteSpace: "pre-wrap", mb: 3 }}
+        >
+          {message}
+        </Typography>
       )}
 
-      <hr style={{ margin: "2rem 0" }} />
+      <Box sx={{ borderTop: 1, borderColor: "divider", pt: 3 }}>
+        <Typography variant="h5" gutterBottom>
+          Describe your issue here to get suggestions
+        </Typography>
+        <Typography mb={2} color="text.secondary">
+          Kaito IT Chat Assistant
+        </Typography>
 
-      <h2>Describe your issue here to get suggestions</h2>
-      <p>Kaito IT Chat Assistant</p>
+        <Paper
+          ref={chatBoxRef}
+          sx={{
+            maxHeight: 250,
+            overflowY: "auto",
+            p: 2,
+            bgcolor: "background.default",
+            mb: 2,
+          }}
+        >
+          {chatHistory.map((msg, i) => (
+            <Box key={i} mb={1}>
+              <Typography
+                component="span"
+                fontWeight="bold"
+                color={msg.role === "user" ? "primary.main" : "secondary.main"}
+              >
+                {msg.role === "user" ? "You" : "Assistant"}:
+              </Typography>{" "}
+              <Typography component="span">{msg.content}</Typography>
+            </Box>
+          ))}
+          {chatLoading && (
+            <Typography fontStyle="italic" color="text.secondary">
+              Assistant is typing...
+            </Typography>
+          )}
+        </Paper>
 
-      <div className="chat-box" ref={chatBoxRef}>
-        {chatHistory.map((msg, i) => (
-          <div key={i} style={{ marginBottom: "0.5rem" }}>
-            <strong>{msg.role === "user" ? "You" : "Assistant"}:</strong> {msg.content}
-          </div>
-        ))}
-        {chatLoading && (
-          <div>
-            <em>Assistant is typing...</em>
-          </div>
-        )}
-      </div>
+        <Box component="form" onSubmit={handleChatSubmit} sx={{ display: "flex", gap: 1 }}>
+          <TextField
+            fullWidth
+            placeholder="What can we help you with?"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            disabled={chatLoading}
+            size="small"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={chatLoading}
+            sx={{ width: "6rem" }}
+          >
+            {chatLoading ? <CircularProgress size={20} /> : "Ask"}
+          </Button>
+        </Box>
+      </Box>
 
-      <form onSubmit={handleChatSubmit} className="chat-form">
-        <input
-          type="text"
-          value={chatInput}
-          onChange={(e) => setChatInput(e.target.value)}
-          placeholder="What can we help you with?"
-        />
-        <button type="submit" disabled={chatLoading}>
-          {chatLoading ? "..." : "Ask"}
-        </button>
-      </form>
-
-      <footer style={{ marginTop: "2rem" }}>© 2025 Kaito IT</footer>
-    </div>
+      <Typography variant="body2" color="text.secondary" align="center" mt={4}>
+        © 2025 Kaito IT
+      </Typography>
+    </Box>
   );
 }
 

@@ -1,11 +1,20 @@
-// src/pages/TicketDetailsPage.js
+// src/pages/TicketDetailsPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 export default function TicketDetailsPage() {
   const { id: ticketId } = useParams();
+  const navigate = useNavigate();
+
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,50 +47,87 @@ export default function TicketDetailsPage() {
     fetchTicket();
   }, [ticketId]);
 
-  if (loading) return <div className="text-white p-4">Loading ticket...</div>;
-  if (error) return <div className="text-red-500 p-4">{error}</div>;
+  if (loading)
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <CircularProgress />
+        <Typography variant="body1" mt={2} color="text.secondary">
+          Loading ticket...
+        </Typography>
+      </Box>
+    );
+
+  if (error)
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Typography variant="body1" color="error">
+          {error}
+        </Typography>
+        <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate("/")}>
+          Back to Dashboard
+        </Button>
+      </Box>
+    );
 
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-3xl font-bold mb-4">Ticket Details</h1>
+    <Box sx={{ p: 4, maxWidth: 700, mx: "auto" }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
+        Ticket Details
+      </Typography>
 
-      <Card className="bg-white/10 border-white/20 text-white mb-6">
-        <CardContent className="p-6">
-          <div className="mb-4">
+      <Card variant="outlined" sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="subtitle1" gutterBottom>
             <strong>Ticket ID:</strong> {ticket.id}
-          </div>
-          <div className="mb-4">
-            <strong>Subject:</strong> {ticket.subject}
-          </div>
-          <div className="mb-4">
-            <strong>Description:</strong>
-            <div className="bg-white/10 rounded p-3 mt-1">
-              {ticket.description}
-            </div>
-          </div>
-          <div className="mb-4">
+          </Typography>
+
+          {ticket.subject && (
+            <Typography variant="subtitle1" gutterBottom>
+              <strong>Subject:</strong> {ticket.subject}
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              bgcolor: "background.paper",
+              p: 2,
+              borderRadius: 1,
+              mb: 2,
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+              Description:
+            </Typography>
+            <Typography variant="body2">{ticket.description}</Typography>
+          </Box>
+
+          <Typography variant="subtitle1" gutterBottom>
             <strong>Status:</strong>{" "}
-            <Badge className={`ml-2 ${ticket.status === "Open" ? "bg-yellow-500" : "bg-green-500"}`}>
-              {ticket.status}
-            </Badge>
-          </div>
-          <div className="mb-4">
+            <Chip
+              label={ticket.status}
+              color={ticket.status === "Open" ? "warning" : "success"}
+              sx={{ ml: 1 }}
+            />
+          </Typography>
+
+          <Typography variant="subtitle1" gutterBottom>
             <strong>Created At:</strong>{" "}
-            {ticket.createdAt ? new Date(ticket.createdAt).toLocaleString() : "N/A"}
-          </div>
-          <div className="mb-4">
+            {ticket.createdAt
+              ? new Date(ticket.createdAt).toLocaleString()
+              : "N/A"}
+          </Typography>
+
+          <Typography variant="subtitle1" gutterBottom>
             <strong>Email:</strong> {ticket.email || "N/A"}
-          </div>
+          </Typography>
         </CardContent>
       </Card>
 
-      <Link
-        to="/"
-        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
+      <Button variant="contained" onClick={() => navigate("/")}>
         ← Back to Dashboard
-      </Link>
-    </div>
+      </Button>
+    </Box>
   );
 }
 
