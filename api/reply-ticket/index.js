@@ -6,12 +6,12 @@ const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const databaseId = "SupportTickets";
 const ticketsContainerId = "Tickets";
-const repliesContainerId = "Replies";
+const repliesContainerId = "Replies";  // define here
 const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
 
-const client = new CosmosClient({ endpoint, key });
-
 module.exports = async function (context, req) {
+  const client = new CosmosClient({ endpoint, key }); // create client here
+
   const { ticketId, sender, message, email } = req.body;
 
   context.log("Received reply-ticket request:", { ticketId, sender, message, email });
@@ -40,7 +40,6 @@ module.exports = async function (context, req) {
 
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
 
-    // Read the ticket item directly by id and partition key (email)
     context.log(`Reading ticket by id=${ticketId} and partitionKey(email)=${email}`);
     const ticketResponse = await ticketsContainer.item(ticketId, email).read();
 
@@ -56,7 +55,7 @@ module.exports = async function (context, req) {
     context.log("Updating ticket status to responded");
     await ticketsContainer.items.upsert(ticket, { partitionKey: email });
 
-    // Optional: Notify Teams
+    // Optional: Notify Teams if webhook URL is set
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
@@ -83,4 +82,5 @@ module.exports = async function (context, req) {
     };
   }
 };
+
 
