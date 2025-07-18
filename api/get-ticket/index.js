@@ -5,7 +5,8 @@ const key = process.env.COSMOS_DB_KEY;
 const client = new CosmosClient({ endpoint, key });
 
 const databaseId = "SupportTickets";
-const containerId = "Tickets";
+const ticketsContainerId = "Tickets";
+const repliesContainerId = "Replies";
 
 module.exports = async function (context, req) {
   const ticketId = req.query.id;
@@ -16,24 +17,42 @@ module.exports = async function (context, req) {
   }
 
   try {
-    const container = client.database(databaseId).container(containerId);
+    const database = client.database(databaseId);
+    const ticketsContainer = database.container(ticketsContainerId);
+    const repliesContainer = database.container(repliesContainerId);
 
-    // Partition key is email, so use query to find by id
-    const querySpec = {
+    // Find the ticket by ID (Cosmos requires query if you don't know the partition key)
+    const ticketQuery = {
       query: "SELECT * FROM c WHERE c.id = @ticketId",
       parameters: [{ name: "@ticketId", value: ticketId }],
     };
 
-    const { resources } = await container.items.query(querySpec).fetchAll();
+    const { resources: ticketResults } = await ticketsContainer.items
+      .query(ticketQuery)
+      .fetchAll();
 
-    if (!resources || resources.length === 0) {
+    if (!ticketResults || ticketResults.length === 0) {
       context.res = { status: 404, body: "Ticket not found" };
       return;
     }
 
+    const ticket = ticketResults[0];
+
+    // Fetch all replies for this ticket
+    const repliesQuery = {
+      query: "SELECT * FROM c WHERE c.ticketId = @ticketId ORDER BY c.timestamp ASC",
+      parameters: [{ name: "@ticketId", value: ticketId }],
+    };
+
+    const { resources: replies } = await repliesContainer.items
+      .query(repliesQuery)
+      .fetchAll();
+
+    ticket.replies = replies || [];
+
     context.res = {
       status: 200,
-      body: resources[0],
+      body: ticket,
     };
   } catch (err) {
     context.log.error("Error reading ticket:", err.message);
