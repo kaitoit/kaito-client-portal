@@ -83,7 +83,9 @@ export default function DashboardPage() {
               <div key={ticket.id} className="ticket-card">
                 <h3>{ticket.subject || "No subject"}</h3>
                 <p>{ticket.description}</p>
-                <Link to={`/ticket/${ticket.id}`}>View & Reply</Link>
+                <Link to={`/ticket/${ticket.id}?email=${encodeURIComponent(ticket.email)}`}>
+                  View & Reply
+                </Link>
               </div>
             ))}
           </div>

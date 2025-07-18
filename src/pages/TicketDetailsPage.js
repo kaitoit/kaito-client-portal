@@ -1,118 +1,110 @@
+// src/pages/TicketDetailsPage.jsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import "../App.css";
 
-function TicketDetailsPage() {
-  const { ticketId } = useParams();
+export default function TicketDetailsPage() {
+  const { id } = useParams();
+  const location = useLocation();
+  const email = new URLSearchParams(location.search).get("email");
+
   const [ticket, setTicket] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [replyText, setReplyText] = useState("");
-  const [submittingReply, setSubmittingReply] = useState(false);
+  const [replies, setReplies] = useState([]);
+  const [newReply, setNewReply] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchTicket() {
+    const fetchTicket = async () => {
       try {
-        const res = await fetch(`/api/get-ticket?id=${ticketId}`);
+        const res = await fetch(`/api/get-ticket?id=${id}&email=${encodeURIComponent(email)}`);
         if (!res.ok) throw new Error("Ticket not found");
         const data = await res.json();
         setTicket(data);
       } catch (err) {
+        setError("Ticket not found or failed to load.");
         console.error(err);
-        setError("Could not fetch ticket details.");
-      } finally {
-        setLoading(false);
       }
+    };
+
+    const fetchReplies = async () => {
+      try {
+        const res = await fetch(`/api/get-replies?ticketId=${id}`);
+        const data = await res.json();
+        setReplies(data);
+      } catch (err) {
+        console.error("Failed to load replies:", err);
+      }
+    };
+
+    if (id && email) {
+      fetchTicket();
+      fetchReplies();
     }
+  }, [id, email]);
 
-    fetchTicket();
-  }, [ticketId]);
+  const handleSubmitReply = async () => {
+    if (!newReply.trim()) return;
 
-  async function handleReplySubmit(e) {
-    e.preventDefault();
-    if (!replyText.trim()) return;
-
-    setSubmittingReply(true);
     try {
       const res = await fetch("/api/reply-ticket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ticketId: ticket.id,
-          email: ticket.email,
-          message: replyText,
-        }),
+        body: JSON.stringify({ ticketId: id, reply: newReply, email }),
       });
 
       if (!res.ok) throw new Error("Failed to send reply");
 
-      const newReply = await res.json();
-
-      setTicket((prev) => ({
-        ...prev,
-        replies: [...(prev.replies || []), newReply],
-      }));
-
-      setReplyText("");
+      const replyData = await res.json();
+      setReplies([...replies, replyData]);
+      setNewReply("");
     } catch (err) {
       console.error(err);
-      alert("Error sending reply");
-    } finally {
-      setSubmittingReply(false);
     }
+  };
+
+  if (error) {
+    return <div className="error">{error}</div>;
   }
 
-  if (loading) return <div className="p-4">Loading ticket...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  if (!ticket) {
+    return <div className="loading-indicator">Loading ticket details...</div>;
+  }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded-2xl shadow-lg space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Ticket Details</h2>
+    <div className="ticket-details">
+      <h2>Ticket Details</h2>
+      <p><strong>Subject:</strong> {ticket.subject}</p>
+      <p><strong>Description:</strong> {ticket.description}</p>
+      <p><strong>Status:</strong> {ticket.status || "Open"}</p>
 
-      <div>
-        <p><strong>ID:</strong> {ticket.id}</p>
-        <p><strong>Email:</strong> {ticket.email}</p>
-        <p><strong>Subject:</strong> {ticket.subject}</p>
-        <p><strong>Message:</strong> {ticket.message}</p>
-        <p><strong>Status:</strong> {ticket.status || "Open"}</p>
-      </div>
+      <hr />
 
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">Replies</h3>
-        <div className="space-y-2">
-          {ticket.replies && ticket.replies.length > 0 ? (
-            ticket.replies.map((reply, index) => (
-              <div key={index} className="p-3 bg-gray-100 rounded-lg shadow-sm">
-                <p className="text-sm text-gray-500">
-                  <strong>{reply.email}</strong> - {new Date(reply.timestamp).toLocaleString()}
-                </p>
-                <p className="mt-1">{reply.message}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 italic">No replies yet.</p>
-          )}
-        </div>
-      </div>
+      <h3>Replies</h3>
+      {replies.length === 0 ? (
+        <p>No replies yet.</p>
+      ) : (
+        <ul>
+          {replies.map((reply, index) => (
+            <li key={index}>
+              <div><strong>{reply.sender || "Support"}:</strong></div>
+              <div>{reply.message}</div>
+              <div className="reply-timestamp">{reply.timestamp}</div>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <form onSubmit={handleReplySubmit} className="space-y-4">
+      <div className="reply-form">
         <textarea
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-          placeholder="Write a reply..."
           rows="4"
-          className="w-full p-3 border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+          value={newReply}
+          onChange={(e) => setNewReply(e.target.value)}
+          placeholder="Type your reply here..."
         />
-        <button
-          type="submit"
-          disabled={submittingReply}
-          className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50"
-        >
-          {submittingReply ? "Sending..." : "Send Reply"}
-        </button>
-      </form>
+        <button onClick={handleSubmitReply}>Send Reply</button>
+      </div>
     </div>
   );
 }
 
-export default TicketDetailsPage;
 
