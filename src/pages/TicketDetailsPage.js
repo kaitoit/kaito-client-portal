@@ -9,15 +9,16 @@ export default function TicketDetailsPage({ ticket, initialReplies = [] }) {
     e.preventDefault();
     setSending(true);
 
-    const res = await fetch("/api/reply-ticket", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ticketId: ticket.id,
-        sender: "IT Staff",
-        message: replyText,
-      }),
-    });
+const res = await fetch("/api/reply-ticket", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    ticketId: ticket.id,
+    sender: "IT Staff",
+    message: replyText,
+    email: ticket.email, // pass the ticket owner's email here
+  }),
+});
 
     if (res.ok) {
       const newReply = {

@@ -12,12 +12,12 @@ const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
 const client = new CosmosClient({ endpoint, key });
 
 module.exports = async function (context, req) {
-  const { ticketId, sender, message } = req.body;
+  const { ticketId, sender, message, email } = req.body;
 
-  if (!ticketId || !sender || !message) {
+  if (!ticketId || !sender || !message || !email) {
     context.res = {
       status: 400,
-      body: "Missing required fields: ticketId, sender, message",
+      body: "Missing required fields: ticketId, sender, message, email",
     };
     return;
   }
@@ -25,6 +25,7 @@ module.exports = async function (context, req) {
   try {
     const repliesContainer = client.database(databaseId).container(repliesContainerId);
 
+    // Create the reply document
     const reply = {
       id: uuidv4(),
       ticketId,
@@ -33,24 +34,32 @@ module.exports = async function (context, req) {
       timestamp: new Date().toISOString(),
     };
 
+    // Insert reply with partitionKey = ticketId (correct for Replies container)
     await repliesContainer.items.create(reply, { partitionKey: ticketId });
 
-    // Optionally update ticket status
+    // Now update ticket status - must provide partitionKey = email for Tickets container
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
+
+    // Query ticket by id using partitionKey email
     const { resources: tickets } = await ticketsContainer
-      .items.query({
-        query: "SELECT * FROM c WHERE c.id = @id",
-        parameters: [{ name: "@id", value: ticketId }],
-      })
+      .items.query(
+        {
+          query: "SELECT * FROM c WHERE c.id = @id",
+          parameters: [{ name: "@id", value: ticketId }],
+        },
+        { partitionKey: email }
+      )
       .fetchAll();
 
     if (tickets.length > 0) {
       const ticket = tickets[0];
       ticket.status = "responded";
-      await ticketsContainer.items.upsert(ticket);
+
+      // Upsert ticket with partitionKey = email
+      await ticketsContainer.items.upsert(ticket, { partitionKey: email });
     }
 
-    // Optional: Notify Teams
+    // Optional: Send notification to Teams
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
