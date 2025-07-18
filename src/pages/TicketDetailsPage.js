@@ -1,36 +1,37 @@
-// src/pages/TicketDetailsPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PageWrapper from "../components/PageWrapper";
 
-export default function TicketDetailsPage() {
-  const { id } = useParams();
+function TicketDetailsPage() {
+  const { ticketId } = useParams();
   const [ticket, setTicket] = useState(null);
-  const [replies, setReplies] = useState([]);
-  const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [replyText, setReplyText] = useState("");
+  const [submittingReply, setSubmittingReply] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchTicket() {
       try {
-        const res = await fetch(`/api/get-ticket/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch ticket");
+        const res = await fetch(`/api/get-ticket?id=${ticketId}`);
+        if (!res.ok) throw new Error("Ticket not found");
         const data = await res.json();
         setTicket(data);
-        setReplies(data.replies || []);
-        setLoading(false);
       } catch (err) {
         console.error(err);
+        setError("Could not fetch ticket details.");
+      } finally {
         setLoading(false);
       }
     }
-    fetchTicket();
-  }, [id]);
 
-  const sendReply = async (e) => {
+    fetchTicket();
+  }, [ticketId]);
+
+  async function handleReplySubmit(e) {
     e.preventDefault();
     if (!replyText.trim()) return;
 
+    setSubmittingReply(true);
     try {
       const res = await fetch("/api/reply-ticket", {
         method: "POST",
@@ -38,81 +39,80 @@ export default function TicketDetailsPage() {
         body: JSON.stringify({
           ticketId: ticket.id,
           email: ticket.email,
-          author: "IT Staff",
           message: replyText,
         }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        alert("❌ Failed to send reply: " + (errorData.error || "Unknown error"));
-        return;
-      }
+      if (!res.ok) throw new Error("Failed to send reply");
 
-      const newReply = {
-        author: "IT Staff",
-        message: replyText,
-        timestamp: new Date().toISOString(),
-      };
+      const newReply = await res.json();
 
-      setReplies((prev) => [...prev, newReply]);
+      setTicket((prev) => ({
+        ...prev,
+        replies: [...(prev.replies || []), newReply],
+      }));
+
       setReplyText("");
     } catch (err) {
       console.error(err);
-      alert("❌ Network error. Reply failed.");
+      alert("Error sending reply");
+    } finally {
+      setSubmittingReply(false);
     }
-  };
-
-  if (loading) {
-    return (
-      <PageWrapper>
-        <p>Loading ticket details...</p>
-      </PageWrapper>
-    );
   }
 
-  if (!ticket) {
-    return (
-      <PageWrapper>
-        <p>❌ Ticket not found.</p>
-      </PageWrapper>
-    );
-  }
+  if (loading) return <div className="p-4">Loading ticket...</div>;
+  if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
-    <PageWrapper>
-      <h1>Ticket Details</h1>
-      <div className="ticket-meta">
-        <p><strong>Name:</strong> {ticket.name}</p>
+    <div className="p-6 max-w-3xl mx-auto bg-white rounded-2xl shadow-lg space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Ticket Details</h2>
+
+      <div>
+        <p><strong>ID:</strong> {ticket.id}</p>
         <p><strong>Email:</strong> {ticket.email}</p>
-        <p><strong>Description:</strong> {ticket.description}</p>
+        <p><strong>Subject:</strong> {ticket.subject}</p>
+        <p><strong>Message:</strong> {ticket.message}</p>
         <p><strong>Status:</strong> {ticket.status || "Open"}</p>
       </div>
 
-      <hr />
-
-      <h2>Conversation</h2>
-      <div className="chat-box" style={{ marginBottom: "1rem" }}>
-        {replies.length === 0 && <p>No replies yet.</p>}
-        {replies.map((r, i) => (
-          <div key={i} className="chat-message" style={{ marginBottom: "1rem" }}>
-            <strong>{r.author}</strong>: {r.message}
-            <div style={{ fontSize: "0.8rem", color: "#888" }}>{new Date(r.timestamp).toLocaleString()}</div>
-          </div>
-        ))}
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-2">Replies</h3>
+        <div className="space-y-2">
+          {ticket.replies && ticket.replies.length > 0 ? (
+            ticket.replies.map((reply, index) => (
+              <div key={index} className="p-3 bg-gray-100 rounded-lg shadow-sm">
+                <p className="text-sm text-gray-500">
+                  <strong>{reply.email}</strong> - {new Date(reply.timestamp).toLocaleString()}
+                </p>
+                <p className="mt-1">{reply.message}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No replies yet.</p>
+          )}
+        </div>
       </div>
 
-      <form onSubmit={sendReply} className="chat-form">
-        <input
-          type="text"
+      <form onSubmit={handleReplySubmit} className="space-y-4">
+        <textarea
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
           placeholder="Write a reply..."
-          required
+          rows="4"
+          className="w-full p-3 border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
-        <button type="submit">Send</button>
+        <button
+          type="submit"
+          disabled={submittingReply}
+          className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50"
+        >
+          {submittingReply ? "Sending..." : "Send Reply"}
+        </button>
       </form>
-    </PageWrapper>
+    </div>
   );
 }
+
+export default TicketDetailsPage;
 
