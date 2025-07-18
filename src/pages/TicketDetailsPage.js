@@ -1,110 +1,87 @@
-// src/pages/TicketDetailsPage.jsx
+// src/pages/TicketDetailsPage.js
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import "../App.css";
+import { useParams, Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function TicketDetailsPage() {
-  const { id } = useParams();
-  const location = useLocation();
-  const email = new URLSearchParams(location.search).get("email");
-
+  const { id: ticketId } = useParams();
   const [ticket, setTicket] = useState(null);
-  const [replies, setReplies] = useState([]);
-  const [newReply, setNewReply] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const res = await fetch(`/api/get-ticket?id=${id}&email=${encodeURIComponent(email)}`);
-        if (!res.ok) throw new Error("Ticket not found");
-        const data = await res.json();
+        const response = await fetch(`/api/get-ticket?id=${ticketId}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const text = await response.text();
+
+        if (!text) {
+          throw new Error("Empty response body");
+        }
+
+        const data = JSON.parse(text);
         setTicket(data);
       } catch (err) {
-        setError("Ticket not found or failed to load.");
-        console.error(err);
+        console.error("Error fetching ticket:", err.message);
+        setError("Ticket not found or error loading ticket.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    const fetchReplies = async () => {
-      try {
-        const res = await fetch(`/api/get-replies?ticketId=${id}`);
-        const data = await res.json();
-        setReplies(data);
-      } catch (err) {
-        console.error("Failed to load replies:", err);
-      }
-    };
+    fetchTicket();
+  }, [ticketId]);
 
-    if (id && email) {
-      fetchTicket();
-      fetchReplies();
-    }
-  }, [id, email]);
-
-  const handleSubmitReply = async () => {
-    if (!newReply.trim()) return;
-
-    try {
-      const res = await fetch("/api/reply-ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticketId: id, reply: newReply, email }),
-      });
-
-      if (!res.ok) throw new Error("Failed to send reply");
-
-      const replyData = await res.json();
-      setReplies([...replies, replyData]);
-      setNewReply("");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
-
-  if (!ticket) {
-    return <div className="loading-indicator">Loading ticket details...</div>;
-  }
+  if (loading) return <div className="text-white p-4">Loading ticket...</div>;
+  if (error) return <div className="text-red-500 p-4">{error}</div>;
 
   return (
-    <div className="ticket-details">
-      <h2>Ticket Details</h2>
-      <p><strong>Subject:</strong> {ticket.subject}</p>
-      <p><strong>Description:</strong> {ticket.description}</p>
-      <p><strong>Status:</strong> {ticket.status || "Open"}</p>
+    <div className="p-6 text-white">
+      <h1 className="text-3xl font-bold mb-4">Ticket Details</h1>
 
-      <hr />
+      <Card className="bg-white/10 border-white/20 text-white mb-6">
+        <CardContent className="p-6">
+          <div className="mb-4">
+            <strong>Ticket ID:</strong> {ticket.id}
+          </div>
+          <div className="mb-4">
+            <strong>Subject:</strong> {ticket.subject}
+          </div>
+          <div className="mb-4">
+            <strong>Description:</strong>
+            <div className="bg-white/10 rounded p-3 mt-1">
+              {ticket.description}
+            </div>
+          </div>
+          <div className="mb-4">
+            <strong>Status:</strong>{" "}
+            <Badge className={`ml-2 ${ticket.status === "Open" ? "bg-yellow-500" : "bg-green-500"}`}>
+              {ticket.status}
+            </Badge>
+          </div>
+          <div className="mb-4">
+            <strong>Created At:</strong>{" "}
+            {ticket.createdAt ? new Date(ticket.createdAt).toLocaleString() : "N/A"}
+          </div>
+          <div className="mb-4">
+            <strong>Email:</strong> {ticket.email || "N/A"}
+          </div>
+        </CardContent>
+      </Card>
 
-      <h3>Replies</h3>
-      {replies.length === 0 ? (
-        <p>No replies yet.</p>
-      ) : (
-        <ul>
-          {replies.map((reply, index) => (
-            <li key={index}>
-              <div><strong>{reply.sender || "Support"}:</strong></div>
-              <div>{reply.message}</div>
-              <div className="reply-timestamp">{reply.timestamp}</div>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="reply-form">
-        <textarea
-          rows="4"
-          value={newReply}
-          onChange={(e) => setNewReply(e.target.value)}
-          placeholder="Type your reply here..."
-        />
-        <button onClick={handleSubmitReply}>Send Reply</button>
-      </div>
+      <Link
+        to="/"
+        className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+      >
+        ← Back to Dashboard
+      </Link>
     </div>
   );
 }
-
 
