@@ -6,15 +6,17 @@ const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const databaseId = "SupportTickets";
 const ticketsContainerId = "Tickets";
-const repliesContainerId = "Replies";  // define here
+const repliesContainerId = "Replies"; // ✅ MISSING IN YOURS
 const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
 
-module.exports = async function (context, req) {
-  const client = new CosmosClient({ endpoint, key }); // create client here
+const client = new CosmosClient({ endpoint, key }); // ✅ must be before any container calls
 
+module.exports = async function (context, req) {
   const { ticketId, sender, message, email } = req.body;
 
   context.log("Received reply-ticket request:", { ticketId, sender, message, email });
+  context.log("Cosmos endpoint:", endpoint);
+  context.log("Key exists:", !!key);
 
   if (!ticketId || !sender || !message || !email) {
     context.res = {
@@ -25,6 +27,7 @@ module.exports = async function (context, req) {
   }
 
   try {
+    // ✅ correct order
     const repliesContainer = client.database(databaseId).container(repliesContainerId);
 
     const reply = {
@@ -38,13 +41,14 @@ module.exports = async function (context, req) {
     context.log("Creating reply document:", reply);
     await repliesContainer.items.create(reply, { partitionKey: ticketId });
 
+    // ✅ Now update original ticket
     const ticketsContainer = client.database(databaseId).container(ticketsContainerId);
 
-    context.log(`Reading ticket by id=${ticketId} and partitionKey(email)=${email}`);
+    context.log(`Reading ticket by id=${ticketId} and partitionKey=${email}`);
     const ticketResponse = await ticketsContainer.item(ticketId, email).read();
 
     if (!ticketResponse.resource) {
-      context.log("Ticket not found for update");
+      context.log("Ticket not found");
       context.res = { status: 404, body: "Ticket not found" };
       return;
     }
@@ -52,10 +56,9 @@ module.exports = async function (context, req) {
     const ticket = ticketResponse.resource;
     ticket.status = "responded";
 
-    context.log("Updating ticket status to responded");
     await ticketsContainer.items.upsert(ticket, { partitionKey: email });
 
-    // Optional: Notify Teams if webhook URL is set
+    // ✅ Optional: Send to Teams
     if (teamsWebhookUrl) {
       await fetch(teamsWebhookUrl, {
         method: "POST",
@@ -78,9 +81,13 @@ module.exports = async function (context, req) {
     context.log.error("Error saving reply or updating ticket:", err);
     context.res = {
       status: 500,
-      body: { error: "Server error while posting reply", details: err.message },
+      body: {
+        error: "Server error while posting reply",
+        details: err.message,
+      },
     };
   }
 };
+
 
 

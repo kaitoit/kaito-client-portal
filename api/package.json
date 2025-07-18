@@ -3,7 +3,8 @@
     "@azure/cosmos": "^4.4.1",
     "@azure/functions": "^4.7.3-beta.0",
     "node-fetch": "^3.3.2",
-    "openai": "^3.3.0"
+    "openai": "^3.3.0",
+    "uuid": "^11.1.0"
   },
   "name": "api",
   "version": "1.0.0",
