@@ -11,7 +11,10 @@ module.exports = async function (context, req) {
   const ticketId = req.query.ticketId;
 
   if (!ticketId) {
-    context.res = { status: 400, body: "ticketId is required" };
+    context.res = {
+      status: 400,
+      body: "Missing ticketId query parameter"
+    };
     return;
   }
 
@@ -38,3 +41,5 @@ module.exports = async function (context, req) {
     };
   }
 };
+
+

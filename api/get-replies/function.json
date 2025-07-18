@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get"],
-      "route": "get-replies/{ticketId}"
+      "route": "get-replies"
     },
     {
       "type": "http",
