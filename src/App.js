@@ -8,7 +8,6 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import SubmitTicketPage from "./pages/SubmitTicketPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
-import TicketDetailsPageWrapper from "./pages/TicketDetailsPageWrapper";
 import Layout from "./Layout";
 
 export default function App() {
@@ -59,6 +58,3 @@ export default function App() {
     </Routes>
   );
 }
-
-
-
