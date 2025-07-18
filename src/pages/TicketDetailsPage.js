@@ -1,80 +1,118 @@
-import React, { useState } from "react";
+// src/pages/TicketDetailsPage.jsx
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import PageWrapper from "../components/PageWrapper";
 
-export default function TicketDetailsPage({ ticket, initialReplies = [] }) {
-  const [replies, setReplies] = useState(initialReplies);
+export default function TicketDetailsPage() {
+  const { id } = useParams();
+  const [ticket, setTicket] = useState(null);
+  const [replies, setReplies] = useState([]);
   const [replyText, setReplyText] = useState("");
-  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTicket() {
+      try {
+        const res = await fetch(`/api/get-ticket/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch ticket");
+        const data = await res.json();
+        setTicket(data);
+        setReplies(data.replies || []);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    }
+    fetchTicket();
+  }, [id]);
 
   const sendReply = async (e) => {
     e.preventDefault();
-    setSending(true);
+    if (!replyText.trim()) return;
 
-const res = await fetch("/api/reply-ticket", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    ticketId: ticket.id,
-    sender: "IT Staff",
-    message: replyText,
-    email: ticket.email, // pass the ticket owner's email here
-  }),
-});
+    try {
+      const res = await fetch("/api/reply-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ticketId: ticket.id,
+          email: ticket.email,
+          author: "IT Staff",
+          message: replyText,
+        }),
+      });
 
-    if (res.ok) {
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert("❌ Failed to send reply: " + (errorData.error || "Unknown error"));
+        return;
+      }
+
       const newReply = {
-        sender: "IT Staff",
+        author: "IT Staff",
         message: replyText,
         timestamp: new Date().toISOString(),
       };
-      setReplies([...replies, newReply]);
-      setReplyText("");
-    } else {
-      const err = await res.json().catch(() => ({}));
-      alert("Failed to send reply. " + (err?.error || ""));
-    }
 
-    setSending(false);
+      setReplies((prev) => [...prev, newReply]);
+      setReplyText("");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Network error. Reply failed.");
+    }
   };
 
+  if (loading) {
+    return (
+      <PageWrapper>
+        <p>Loading ticket details...</p>
+      </PageWrapper>
+    );
+  }
+
+  if (!ticket) {
+    return (
+      <PageWrapper>
+        <p>❌ Ticket not found.</p>
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div className="page-container">
+    <PageWrapper>
       <h1>Ticket Details</h1>
-      <p>
-        <strong>{ticket.name}</strong> ({ticket.email})
-      </p>
-      <p>
-        <strong>Issue:</strong> {ticket.description}
-      </p>
+      <div className="ticket-meta">
+        <p><strong>Name:</strong> {ticket.name}</p>
+        <p><strong>Email:</strong> {ticket.email}</p>
+        <p><strong>Description:</strong> {ticket.description}</p>
+        <p><strong>Status:</strong> {ticket.status || "Open"}</p>
+      </div>
+
       <hr />
+
       <h2>Conversation</h2>
-      <div className="chat-box" style={{ maxHeight: 300, overflowY: "auto" }}>
+      <div className="chat-box" style={{ marginBottom: "1rem" }}>
+        {replies.length === 0 && <p>No replies yet.</p>}
         {replies.map((r, i) => (
-          <div key={i}>
-            <strong>{r.sender}</strong>: {r.message}
-            <div style={{ fontSize: "0.8rem", color: "#888" }}>
-              {new Date(r.timestamp).toLocaleString()}
-            </div>
+          <div key={i} className="chat-message" style={{ marginBottom: "1rem" }}>
+            <strong>{r.author}</strong>: {r.message}
+            <div style={{ fontSize: "0.8rem", color: "#888" }}>{new Date(r.timestamp).toLocaleString()}</div>
           </div>
         ))}
       </div>
 
-      <form
-        onSubmit={sendReply}
-        className="chat-form"
-        style={{ marginTop: "1rem" }}
-      >
+      <form onSubmit={sendReply} className="chat-form">
         <input
           type="text"
-          placeholder="Write a reply..."
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
+          placeholder="Write a reply..."
           required
         />
-        <button type="submit" disabled={sending}>
-          {sending ? "Sending..." : "Send"}
-        </button>
+        <button type="submit">Send</button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }
 
