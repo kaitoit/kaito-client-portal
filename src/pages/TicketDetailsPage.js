@@ -1,20 +1,17 @@
-// src/pages/TicketDetailsPage.jsx
+// src/pages/TicketDetailsPage.js
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
-  Box,
   Card,
   CardContent,
-  Chip,
   Typography,
   Button,
-  CircularProgress,
+  Chip,
+  Box,
 } from "@mui/material";
 
 export default function TicketDetailsPage() {
   const { id: ticketId } = useParams();
-  const navigate = useNavigate();
-
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,17 +20,9 @@ export default function TicketDetailsPage() {
     const fetchTicket = async () => {
       try {
         const response = await fetch(`/api/get-ticket?id=${ticketId}`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
         const text = await response.text();
-
-        if (!text) {
-          throw new Error("Empty response body");
-        }
-
+        if (!text) throw new Error("Empty response body");
         const data = JSON.parse(text);
         setTicket(data);
       } catch (err) {
@@ -43,91 +32,95 @@ export default function TicketDetailsPage() {
         setLoading(false);
       }
     };
-
     fetchTicket();
   }, [ticketId]);
 
-  if (loading)
-    return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <CircularProgress />
-        <Typography variant="body1" mt={2} color="text.secondary">
-          Loading ticket...
-        </Typography>
-      </Box>
-    );
-
-  if (error)
-    return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography variant="body1" color="error">
-          {error}
-        </Typography>
-        <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate("/")}>
-          Back to Dashboard
-        </Button>
-      </Box>
-    );
+  if (loading) return <Typography sx={{ color: "#fff", p: 2 }}>Loading ticket...</Typography>;
+  if (error) return <Typography sx={{ color: "#f87171", p: 2 }}>{error}</Typography>;
 
   return (
-    <Box sx={{ p: 4, maxWidth: 700, mx: "auto" }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Box sx={{ p: 4, color: "#fff" }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
         Ticket Details
       </Typography>
 
-      <Card variant="outlined" sx={{ mb: 4 }}>
+      <Card
+        sx={{
+          backgroundColor: "rgba(255, 255, 255, 0.08)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          color: "#fff",
+          mb: 4,
+        }}
+      >
         <CardContent>
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography sx={{ mb: 2 }}>
             <strong>Ticket ID:</strong> {ticket.id}
           </Typography>
 
-          {ticket.subject && (
-            <Typography variant="subtitle1" gutterBottom>
-              <strong>Subject:</strong> {ticket.subject}
-            </Typography>
-          )}
+          <Typography sx={{ mb: 2 }}>
+            <strong>Subject:</strong> {ticket.subject}
+          </Typography>
 
-          <Box
-            sx={{
-              bgcolor: "background.paper",
-              p: 2,
-              borderRadius: 1,
-              mb: 2,
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
-              Description:
-            </Typography>
-            <Typography variant="body2">{ticket.description}</Typography>
-          </Box>
+          <Typography sx={{ mb: 2 }}>
+            <strong>Description:</strong>
+            <Box
+              sx={{
+                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                borderRadius: 2,
+                p: 2,
+                mt: 1,
+              }}
+            >
+              {ticket.description}
+            </Box>
+          </Typography>
 
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography sx={{ mb: 2 }}>
             <strong>Status:</strong>{" "}
             <Chip
               label={ticket.status}
-              color={ticket.status === "Open" ? "warning" : "success"}
-              sx={{ ml: 1 }}
+              sx={{
+                ml: 1,
+                color: "#fff",
+                backgroundColor:
+                  ticket.status === "Open" ? "#facc15" : "#22c55e",
+              }}
             />
           </Typography>
 
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography sx={{ mb: 2 }}>
             <strong>Created At:</strong>{" "}
             {ticket.createdAt
               ? new Date(ticket.createdAt).toLocaleString()
               : "N/A"}
           </Typography>
 
-          <Typography variant="subtitle1" gutterBottom>
+          <Typography sx={{ mb: 2 }}>
             <strong>Email:</strong> {ticket.email || "N/A"}
           </Typography>
         </CardContent>
       </Card>
 
-      <Button variant="contained" onClick={() => navigate("/")}>
+      <Button
+        variant="contained"
+        component={Link}
+        to="/"
+        sx={{
+          backgroundColor: "#2563eb",
+          "&:hover": {
+            backgroundColor: "#1d4ed8",
+          },
+          color: "#fff",
+          borderRadius: 2,
+          px: 3,
+          py: 1,
+          textTransform: "none",
+        }}
+      >
         ← Back to Dashboard
       </Button>
     </Box>
   );
 }
+
 
