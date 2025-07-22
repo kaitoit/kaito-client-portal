@@ -1,6 +1,6 @@
 const { CosmosClient } = require("@azure/cosmos");
 const { randomUUID } = require("crypto");
-const fetch = require("node-fetch"); // Make sure it's installed or bundled
+const fetch = require("node-fetch");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
@@ -47,7 +47,7 @@ async function notifyTeams(ticket) {
 module.exports = async function (context, req) {
   const { name, email, subject, description, component, priority, timestamp } = req.body;
 
-  if (!description || !(name && email) && !subject) {
+  if (!description || !name || !email || !subject) {
     context.res = {
       status: 400,
       body: "Missing required fields."
@@ -55,24 +55,28 @@ module.exports = async function (context, req) {
     return;
   }
 
+  const safeEmail = email.toLowerCase();
+
   try {
     const container = client.database(databaseId).container(containerId);
 
     const newTicket = {
       id: randomUUID(),
-      name: name || null,
-      email: email || null,
-      subject: subject || null,
+      name,
+      email: safeEmail,
+      subject,
       description,
       component: component || "general",
       priority: priority || "normal",
       status: "open",
-      submittedAt: timestamp || new Date().toISOString(),
-      replies: [] // for in-app chatting
+      submittedAt: timestamp && !isNaN(Date.parse(timestamp))
+        ? new Date(timestamp).toISOString()
+        : new Date().toISOString(),
+      replies: []
     };
 
     const { resource: createdItem } = await container.items.create(newTicket, {
-      partitionKey: newTicket.email
+      partitionKey: safeEmail
     });
 
     await notifyTeams(newTicket);
@@ -92,5 +96,6 @@ module.exports = async function (context, req) {
     };
   }
 };
+
 
 
