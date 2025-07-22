@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+// src/pages/SubmitTicketPage.js
+import React, { useState } from "react";
+import { useMsal } from "@azure/msal-react";
 import {
   Box,
   Typography,
@@ -7,46 +9,40 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { useMsal } from "@azure/msal-react";
 
 export default function SubmitTicketPage() {
+  const { accounts } = useMsal();
+  const userEmail = accounts?.[0]?.username || "";
+  const userName = accounts?.[0]?.name || "";
+
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
-
-  const { accounts } = useMsal();
-
-  useEffect(() => {
-    if (accounts.length > 0) {
-      const currentAccount = accounts[0];
-      setUser({
-        name: currentAccount.name,
-        email: currentAccount.username,
-      });
-    }
-  }, [accounts]);
 
   const handleSubmit = async () => {
-    if (!user) {
-      setError("User not authenticated");
-      return;
-    }
-
+    setError(null);
     try {
       const res = await fetch("/api/submit-ticket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: user.name,
-          email: user.email,
+          name: userName,
+          email: userEmail,
           subject,
           description,
+          // you can add component, priority here if needed
         }),
       });
-      if (!res.ok) throw new Error("Failed to submit ticket");
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Failed to submit ticket");
+      }
+
       setSubmitted(true);
+      setSubject("");
+      setDescription("");
     } catch (err) {
       setError(err.message);
     }
@@ -78,9 +74,15 @@ export default function SubmitTicketPage() {
             onChange={(e) => setSubject(e.target.value)}
             sx={{
               mb: 3,
-              "& .MuiInputBase-root": { color: "#fff" },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#888" },
-              "& .MuiInputLabel-root": { color: "#ccc" },
+              "& .MuiInputBase-root": {
+                color: "#fff",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#888",
+              },
+              "& .MuiInputLabel-root": {
+                color: "#ccc",
+              },
             }}
           />
           <TextField
@@ -93,14 +95,22 @@ export default function SubmitTicketPage() {
             onChange={(e) => setDescription(e.target.value)}
             sx={{
               mb: 3,
-              "& .MuiInputBase-root": { color: "#fff" },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#888" },
-              "& .MuiInputLabel-root": { color: "#ccc" },
+              "& .MuiInputBase-root": {
+                color: "#fff",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#888",
+              },
+              "& .MuiInputLabel-root": {
+                color: "#ccc",
+              },
             }}
           />
+
           {error && (
             <Typography sx={{ color: "#f87171", mb: 2 }}>{error}</Typography>
           )}
+
           {submitted ? (
             <Typography sx={{ color: "#22c55e" }}>
               ✅ Ticket submitted successfully!
@@ -109,9 +119,12 @@ export default function SubmitTicketPage() {
             <Button
               variant="contained"
               onClick={handleSubmit}
+              disabled={!subject.trim() || !description.trim()}
               sx={{
                 backgroundColor: "#2563eb",
-                "&:hover": { backgroundColor: "#1d4ed8" },
+                "&:hover": {
+                  backgroundColor: "#1d4ed8",
+                },
                 color: "#fff",
                 borderRadius: 2,
                 px: 3,
