@@ -29,11 +29,11 @@ export default function TicketDetailsPage() {
   const [replyMessage, setReplyMessage] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
 
-  // Fetch ticket details once
+  // 1. Fetch ticket details
   useEffect(() => {
     if (!ticketId || !userEmail) return;
 
-    const fetchTicket = async () => {
+    (async () => {
       try {
         const res = await fetch(
           `/api/get-ticket?id=${ticketId}&email=${encodeURIComponent(userEmail)}`
@@ -45,32 +45,30 @@ export default function TicketDetailsPage() {
       } finally {
         setLoadingTicket(false);
       }
-    };
-
-    fetchTicket();
+    })();
   }, [ticketId, userEmail]);
 
-  // Fetch replies whenever the ticketId changes or after sending
-  const fetchReplies = async () => {
-    setLoadingReplies(true);
-    try {
-      const res = await fetch(`/api/get-replies?ticketId=${ticketId}`);
-      if (!res.ok) throw new Error("Failed to load replies");
-      const data = await res.json();
-      setReplies(data.replies || []);
-    } catch (err) {
-      console.error("Error fetching replies:", err);
-      setReplies([]);
-    } finally {
-      setLoadingReplies(false);
-    }
-  };
-
+  // 2. Fetch replies whenever ticketId changes
   useEffect(() => {
-    if (ticketId) fetchReplies();
+    if (!ticketId) return;
+
+    setLoadingReplies(true);
+    (async () => {
+      try {
+        const res = await fetch(`/api/get-replies?ticketId=${ticketId}`);
+        if (!res.ok) throw new Error("Failed to load replies");
+        const data = await res.json();
+        setReplies(data.replies || []);
+      } catch (err) {
+        console.error("Error fetching replies:", err);
+        setReplies([]);
+      } finally {
+        setLoadingReplies(false);
+      }
+    })();
   }, [ticketId]);
 
-  // Send a reply
+  // 3. Send a reply
   const handleReply = async () => {
     if (!replyMessage.trim()) return;
 
@@ -81,13 +79,18 @@ export default function TicketDetailsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ticketId,
-          sender: userEmail,           // must match Azure Function field
+          sender: userEmail,
           message: replyMessage.trim(),
         }),
       });
       if (!res.ok) throw new Error(await res.text());
       setReplyMessage("");
-      await fetchReplies();
+
+      // Refresh replies immediately
+      setLoadingReplies(true);
+      const refresh = await fetch(`/api/get-replies?ticketId=${ticketId}`);
+      const refreshed = await refresh.json();
+      setReplies(refreshed.replies || []);
     } catch (err) {
       console.error("Error sending reply:", err);
     } finally {
@@ -187,4 +190,5 @@ export default function TicketDetailsPage() {
     </Paper>
   );
 }
+
 
