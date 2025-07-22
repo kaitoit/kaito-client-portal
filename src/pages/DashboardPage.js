@@ -14,7 +14,7 @@ import BackgroundVideo from "../components/BackgroundVideo";
 
 export default function DashboardPage() {
   const [tickets, setTickets] = useState([]);
-  const [tenantStatus, setTenantStatus] = useState("Healthy");
+  const [tenantStatus] = useState("Healthy");
   const [input, setInput] = useState("");
   const [assistantReply, setAssistantReply] = useState("");
   const [loadingReply, setLoadingReply] = useState(false);
