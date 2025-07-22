@@ -96,24 +96,24 @@ export default function Layout({ children }) {
       </AppBar>
 
       {/* Glassmorphic Content Container */}
-      <Box
-        component="main"
-        sx={{
-          maxWidth: "960px",
-          margin: "2rem auto",
-          padding: "2rem",
-          backgroundColor: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          borderRadius: 3,
-          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        {children}
-      </Box>
+<Box
+  component="main"
+  sx={{
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    backdropFilter: "blur(10px)",
+    borderRadius: 3,
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+    padding: 3,
+    color: "#fff",
+    minHeight: "calc(100vh - 80px)",
+    margin: "2rem auto",
+    maxWidth: 960,
+    position: "relative",
+    zIndex: 1,
+  }}
+>
+  {children}
+</Box>
     </>
   );
 }
