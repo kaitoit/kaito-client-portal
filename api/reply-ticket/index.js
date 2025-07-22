@@ -1,47 +1,50 @@
+// api/reply-ticket/index.js
 const { CosmosClient } = require("@azure/cosmos");
+const { v4: uuidv4 } = require("uuid");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
 const client = new CosmosClient({ endpoint, key });
 
 const databaseId = "SupportTickets";
-const containerId = "Replies";
+const repliesContainerId = "Replies";
 
 module.exports = async function (context, req) {
-  const { ticketId, from, message } = req.body;
+  context.log("Reply request:", req.body);
 
-  if (!ticketId || !from || !message) {
+  const { ticketId, sender, message } = req.body;
+  if (!ticketId || !sender || !message) {
     context.res = {
       status: 400,
-      body: "Missing ticketId, from, or message"
+      body: "ticketId, sender, and message are required.",
     };
     return;
   }
 
   try {
-    const container = client.database(databaseId).container(containerId);
+    const container = client.database(databaseId).container(repliesContainerId);
 
-    const replyItem = {
-      id: crypto.randomUUID(),
+    const newReply = {
+      id: uuidv4(),
       ticketId,
-      from,
+      sender,
       message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    await container.items.create(replyItem, {
-      partitionKey: ticketId
-    });
+    context.log("Creating reply:", newReply);
+    await container.items.create(newReply, { partitionKey: ticketId });
 
     context.res = {
       status: 201,
-      body: { message: "Reply added" }
+      body: { message: "Reply added.", replyId: newReply.id },
     };
   } catch (err) {
-    context.log("Reply error:", err.message);
+    context.log.error("Error saving reply:", err);
     context.res = {
       status: 500,
-      body: "Failed to add reply"
+      body: { error: "Server error while posting reply." },
     };
   }
 };
+
