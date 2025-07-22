@@ -1,84 +1,153 @@
 // src/pages/TicketDetailsPage.js
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import {
+  Box,
+  Typography,
   Card,
   CardContent,
-  Typography,
-  CircularProgress,
+  Chip,
   Button,
-  Stack,
 } from "@mui/material";
 
 export default function TicketDetailsPage() {
-  const { id } = useParams();
+  const { id: ticketId } = useParams();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/get-ticket?id=${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTicket(data.ticket);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching ticket:", err);
-        setLoading(false);
-      });
-  }, [id]);
+    const fetchTicket = async () => {
+      try {
+        const response = await fetch(`/api/get-ticket?id=${ticketId}`);
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
 
-  if (loading) {
-    return <CircularProgress sx={{ mt: 4 }} />;
-  }
+        const text = await response.text();
+        if (!text) throw new Error("Empty response body");
 
-  if (!ticket) {
+        const data = JSON.parse(text);
+        setTicket(data);
+      } catch (err) {
+        console.error("Error fetching ticket:", err.message);
+        setError("Ticket not found or error loading ticket.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTicket();
+  }, [ticketId]);
+
+  if (loading)
     return (
-      <Typography variant="h6" color="error" sx={{ mt: 4 }}>
-        Ticket not found.
+      <Typography sx={{ color: "#fff", p: 2 }} variant="body1">
+        Loading ticket...
       </Typography>
     );
-  }
+  if (error)
+    return (
+      <Typography sx={{ color: "#f87171", p: 2 }} variant="body1">
+        {error}
+      </Typography>
+    );
 
   return (
-    <Card
+    <Box
       sx={{
-        backgroundColor: "rgba(255, 255, 255, 0.08)",
-        backdropFilter: "blur(10px)",
-        padding: 3,
+        p: 4,
+        color: "#fff",
+        backdropFilter: "blur(12px)",
+        backgroundColor: "rgba(0,0,0,0.35)",
         borderRadius: 3,
-        boxShadow: 5,
+        maxWidth: 700,
+        mx: "auto",
       }}
     >
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          {ticket.subject}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {ticket.description}
-        </Typography>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Status: {ticket.status}
-        </Typography>
+      <Typography variant="h4" gutterBottom fontWeight="bold">
+        Ticket Details
+      </Typography>
 
-        <Stack direction="row" spacing={2} mt={3}>
-          <Button
-            variant="contained"
-            color="primary"
-            component={Link}
-            to={`/ticket/${ticket.id}/replies`}
-          >
-            View Replies
-          </Button>
-          <Button variant="outlined" component={Link} to="/">
-            Back to Dashboard
-          </Button>
-        </Stack>
-      </CardContent>
-    </Card>
+      <Card
+        sx={{
+          backgroundColor: "rgba(255, 255, 255, 0.08)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          color: "#fff",
+          mb: 4,
+          borderRadius: 3,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+        }}
+      >
+        <CardContent>
+          <Typography sx={{ mb: 2 }}>
+            <strong>Ticket ID:</strong> {ticket.id}
+          </Typography>
+
+          <Typography sx={{ mb: 2 }}>
+            <strong>Subject:</strong> {ticket.subject}
+          </Typography>
+
+          <Typography sx={{ mb: 2 }}>
+            <strong>Description:</strong>
+            <Box
+              sx={{
+                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                borderRadius: 2,
+                p: 2,
+                mt: 1,
+              }}
+            >
+              {ticket.description}
+            </Box>
+          </Typography>
+
+          <Typography sx={{ mb: 2 }}>
+            <strong>Status:</strong>{" "}
+            <Chip
+              label={ticket.status}
+              sx={{
+                ml: 1,
+                color: "#fff",
+                backgroundColor:
+                  ticket.status === "Open" ? "#facc15" : "#22c55e",
+              }}
+            />
+          </Typography>
+
+          <Typography sx={{ mb: 2 }}>
+            <strong>Created At:</strong>{" "}
+            {ticket.createdAt
+              ? new Date(ticket.createdAt).toLocaleString()
+              : "N/A"}
+          </Typography>
+
+          <Typography sx={{ mb: 2 }}>
+            <strong>Email:</strong> {ticket.email || "N/A"}
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Button
+        variant="contained"
+        component={RouterLink}
+        to="/"
+        sx={{
+          backgroundColor: "#2563eb",
+          "&:hover": {
+            backgroundColor: "#1d4ed8",
+          },
+          color: "#fff",
+          borderRadius: 2,
+          px: 3,
+          py: 1,
+          textTransform: "none",
+          boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
+        }}
+      >
+        ← Back to Dashboard
+      </Button>
+    </Box>
   );
 }
-
 
 
 
