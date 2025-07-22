@@ -27,8 +27,9 @@ export default function TicketDetailsPage() {
         );
 
         if (response.ok) {
-          const data = await response.json();
-          setTicket(data);
+const text = await response.text();
+const data = text ? JSON.parse(text) : null;
+setTicket(data);
         } else {
           const errorText = await response.text();
           console.error(`Error ${response.status}: ${errorText}`);
@@ -91,6 +92,4 @@ export default function TicketDetailsPage() {
     </Paper>
   );
 }
-
-
 

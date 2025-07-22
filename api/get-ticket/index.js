@@ -1,4 +1,3 @@
-// api/get-ticket/index.js
 const { CosmosClient } = require("@azure/cosmos");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
@@ -13,7 +12,8 @@ module.exports = async function (context, req) {
   if (!ticketId || !email) {
     context.res = {
       status: 400,
-      body: "Missing ticket ID or email in query parameters.",
+      headers: { "Content-Type": "application/json" },
+      body: { error: "Missing ticket ID or email in query parameters." },
     };
     return;
   }
@@ -27,16 +27,25 @@ module.exports = async function (context, req) {
       .item(ticketId, email)
       .read();
 
-    context.res = {
-      status: 200,
-      body: ticket,
-    };
+    if (!ticket) {
+      context.res = {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+        body: { error: "Ticket not found." },
+      };
+    } else {
+      context.res = {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+        body: ticket,
+      };
+    }
   } catch (error) {
     context.log("Error reading ticket:", error.message);
     context.res = {
-      status: 404,
-      body: "Ticket not found.",
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+      body: { error: "Failed to fetch ticket." },
     };
   }
 };
-
