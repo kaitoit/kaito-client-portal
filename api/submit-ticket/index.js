@@ -9,6 +9,8 @@ const client = new CosmosClient({ endpoint, key });
 const databaseId = "SupportTickets";
 const containerId = "Tickets";
 const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
+const email = req.body.email?.trim().toLowerCase();
+
 
 async function notifyTeams(ticket) {
   if (!teamsWebhookUrl) return;
@@ -96,6 +98,7 @@ module.exports = async function (context, req) {
     };
   }
 };
+
 
 
 

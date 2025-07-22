@@ -2,49 +2,45 @@ const { CosmosClient } = require("@azure/cosmos");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
-const databaseId = "KaitoTickets";
+const client = new CosmosClient({ endpoint, key });
+
+const databaseId = "SupportTickets";
 const containerId = "Tickets";
 
 module.exports = async function (context, req) {
   const ticketId = req.query.id;
-  const email = req.query.email;
+  const rawEmail = req.query.email;
 
-  if (!ticketId || !email) {
+  if (!ticketId || !rawEmail) {
     context.res = {
       status: 400,
-      headers: { "Content-Type": "application/json" },
-      body: { error: "Missing ticket ID or email in query parameters." },
+      body: "Missing ticket ID or email.",
     };
     return;
   }
 
-  const client = new CosmosClient({ endpoint, key });
+  const email = decodeURIComponent(rawEmail).trim().toLowerCase();
 
   try {
-    const { resource: ticket } = await client
-      .database(databaseId)
-      .container(containerId)
-      .item(ticketId, email)
-      .read();
+    const container = client.database(databaseId).container(containerId);
+    const { resource } = await container.item(ticketId, email).read();
 
-    if (!ticket) {
+    if (!resource) {
       context.res = {
         status: 404,
-        headers: { "Content-Type": "application/json" },
-        body: { error: "Ticket not found." },
+        body: "Ticket not found.",
       };
-    } else {
-      context.res = {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-        body: ticket,
-      };
+      return;
     }
-  } catch (error) {
-    context.log("Error reading ticket:", error.message);
+
+    context.res = {
+      status: 200,
+      body: resource,
+    };
+  } catch (err) {
+    context.log.error("Error fetching ticket:", err.message);
     context.res = {
       status: 500,
-      headers: { "Content-Type": "application/json" },
       body: { error: "Failed to fetch ticket." },
     };
   }
