@@ -2,24 +2,22 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
+  Typography,
   Card,
   CardContent,
-  Typography,
-  Button,
   TextField,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
+  Button,
   Chip,
-  Stack,
+  Divider,
 } from "@mui/material";
+import BackgroundVideo from "../components/BackgroundVideo";
 
 export default function DashboardPage() {
   const [tickets, setTickets] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [tenantStatus, setTenantStatus] = useState("Healthy");
   const [input, setInput] = useState("");
-  const [loadingTickets, setLoadingTickets] = useState(true);
+  const [assistantReply, setAssistantReply] = useState("");
+  const [loadingReply, setLoadingReply] = useState(false);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -27,181 +25,182 @@ export default function DashboardPage() {
         const response = await fetch("/api/get-tickets");
         const data = await response.json();
         setTickets(data || []);
-      } catch (err) {
-        console.error("Failed to load tickets", err);
-      } finally {
-        setLoadingTickets(false);
+      } catch (error) {
+        console.error("Error fetching tickets:", error);
       }
     };
+
     fetchTickets();
   }, []);
 
-  const handleChatSubmit = async () => {
-    if (!input.trim()) return;
-    const newMessages = [...chatMessages, { role: "user", content: input }];
-    setChatMessages(newMessages);
-    setInput("");
-
+  const handleAskAssistant = async () => {
+    if (!input) return;
+    setLoadingReply(true);
     try {
-      const response = await fetch("/api/chat-assistant", {
+      const res = await fetch("/api/chat-assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({ prompt: input }),
       });
-
-      const data = await response.json();
-      if (data?.reply) {
-        setChatMessages([...newMessages, { role: "assistant", content: data.reply }]);
-      }
+      const data = await res.json();
+      setAssistantReply(data.reply || "No response.");
     } catch (error) {
-      console.error("Error calling assistant:", error);
+      setAssistantReply("Error getting reply.");
+    } finally {
+      setLoadingReply(false);
     }
   };
 
   return (
-    <Box sx={{ p: 4, color: "#fff" }}>
-      <Stack spacing={4}>
-        {/* Tenant Health Section */}
+    <>
+      <BackgroundVideo />
+      <Box sx={{ p: 4, color: "#fff", position: "relative", zIndex: 1 }}>
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold" }}>
+          Client Dashboard
+        </Typography>
+
+        {/* Tenant Status */}
         <Card
           sx={{
-            backgroundColor: "rgba(255,255,255,0.08)",
+            backgroundColor: "transparent",
             border: "1px solid rgba(255,255,255,0.2)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
+            backdropFilter: "blur(15px)",
+            WebkitBackdropFilter: "blur(15px)",
             borderRadius: 3,
             color: "#fff",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            mb: 4,
           }}
         >
           <CardContent>
             <Typography variant="h5" gutterBottom>
-              Tenant Health Overview
+              Tenant Status
             </Typography>
-            <Typography sx={{ color: "#ccc" }}>
-              You don't currently have an active Azure tenant to monitor.
-              Once connected, this panel will display service and resource health.
-            </Typography>
+            <Chip
+              label={tenantStatus}
+              sx={{
+                backgroundColor:
+                  tenantStatus === "Healthy" ? "#22c55e" : "#facc15",
+                color: "#000",
+                fontWeight: "bold",
+              }}
+            />
           </CardContent>
         </Card>
 
-        {/* Tickets Section */}
+        {/* Submitted Tickets */}
         <Card
           sx={{
-            backgroundColor: "rgba(255,255,255,0.08)",
+            backgroundColor: "transparent",
             border: "1px solid rgba(255,255,255,0.2)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
+            backdropFilter: "blur(15px)",
+            WebkitBackdropFilter: "blur(15px)",
             borderRadius: 3,
             color: "#fff",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            mb: 4,
           }}
         >
           <CardContent>
             <Typography variant="h5" gutterBottom>
               Submitted Tickets
             </Typography>
-            {loadingTickets ? (
-              <Typography>Loading...</Typography>
-            ) : tickets.length === 0 ? (
-              <Typography>No tickets found.</Typography>
+            {tickets.length === 0 ? (
+              <Typography>No tickets submitted.</Typography>
             ) : (
-              <List>
-                {tickets.map((ticket) => (
-                  <React.Fragment key={ticket.id}>
-                    <ListItem
-                      button
-                      component="a"
-                      href={`/ticket/${ticket.id}`}
-                      sx={{ color: "#fff" }}
-                    >
-                      <ListItemText
-                        primary={ticket.subject}
-                        secondary={`Created: ${new Date(ticket.createdAt).toLocaleString()}`}
-                      />
-                      <Chip
-                        label={ticket.status}
-                        sx={{
-                          ml: 2,
-                          backgroundColor:
-                            ticket.status === "Open" ? "#facc15" : "#22c55e",
-                          color: "#000",
-                        }}
-                      />
-                    </ListItem>
-                    <Divider sx={{ borderColor: "rgba(255,255,255,0.1)" }} />
-                  </React.Fragment>
-                ))}
-              </List>
+              tickets.map((ticket) => (
+                <Box
+                  key={ticket.id}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    borderRadius: 2,
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                  }}
+                >
+                  <Typography>
+                    <strong>Subject:</strong> {ticket.subject}
+                  </Typography>
+                  <Typography>
+                    <strong>Status:</strong>{" "}
+                    <Chip
+                      label={ticket.status}
+                      sx={{
+                        ml: 1,
+                        color: "#fff",
+                        backgroundColor:
+                          ticket.status === "Open" ? "#facc15" : "#22c55e",
+                      }}
+                    />
+                  </Typography>
+                  <Typography variant="body2">
+                    Created At:{" "}
+                    {ticket.createdAt
+                      ? new Date(ticket.createdAt).toLocaleString()
+                      : "N/A"}
+                  </Typography>
+                </Box>
+              ))
             )}
           </CardContent>
         </Card>
 
-        {/* Chat Assistant Section */}
+        {/* GPT Chat Assistant */}
         <Card
           sx={{
-            backgroundColor: "rgba(255,255,255,0.08)",
+            backgroundColor: "transparent",
             border: "1px solid rgba(255,255,255,0.2)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
+            backdropFilter: "blur(15px)",
+            WebkitBackdropFilter: "blur(15px)",
             borderRadius: 3,
             color: "#fff",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
           }}
         >
           <CardContent>
             <Typography variant="h5" gutterBottom>
-              Ask Kaito AI
+              Ask GPT Assistant
             </Typography>
-
-            <List sx={{ maxHeight: 300, overflowY: "auto", mb: 2 }}>
-              {chatMessages.map((msg, idx) => (
-                <ListItem key={idx} sx={{ color: "#fff" }}>
-                  <ListItemText
-                    primary={`${msg.role === "user" ? "You" : "Assistant"}:`}
-                    secondary={msg.content}
-                    primaryTypographyProps={{ fontWeight: "bold", color: "#ccc" }}
-                    secondaryTypographyProps={{ whiteSpace: "pre-wrap" }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-
-            <Stack direction="row" spacing={2}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Ask a question..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                sx={{
-                  input: { color: "#fff" },
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "rgba(255,255,255,0.05)",
-                    borderColor: "rgba(255,255,255,0.2)",
-                  },
-                }}
-              />
-              <Button
-                onClick={handleChatSubmit}
-                sx={{
-                  backgroundColor: "#2563eb",
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Ask a question..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              sx={{
+                input: { color: "#fff" },
+                mb: 2,
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
                   color: "#fff",
-                  textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: "#1d4ed8",
-                  },
-                  boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
-                  borderRadius: 2,
-                  px: 3,
-                }}
-              >
-                Ask
-              </Button>
-            </Stack>
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleAskAssistant}
+              disabled={loadingReply}
+              sx={{
+                backgroundColor: "#2563eb",
+                "&:hover": { backgroundColor: "#1d4ed8" },
+                color: "#fff",
+                mb: 2,
+                borderRadius: 2,
+                px: 3,
+              }}
+            >
+              Ask
+            </Button>
+            <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.2)" }} />
+            <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+              {assistantReply}
+            </Typography>
           </CardContent>
         </Card>
-      </Stack>
-    </Box>
+      </Box>
+    </>
   );
 }
 
