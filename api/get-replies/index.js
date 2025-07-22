@@ -13,7 +13,7 @@ module.exports = async function (context, req) {
   if (!ticketId) {
     context.res = {
       status: 400,
-      body: "Missing ticketId query parameter"
+      body: "Missing ticketId"
     };
     return;
   }
@@ -21,25 +21,25 @@ module.exports = async function (context, req) {
   try {
     const container = client.database(databaseId).container(containerId);
 
-    // Query all replies for this ticketId (partition key)
     const querySpec = {
       query: "SELECT * FROM c WHERE c.ticketId = @ticketId ORDER BY c.timestamp ASC",
-      parameters: [{ name: "@ticketId", value: ticketId }],
+      parameters: [{ name: "@ticketId", value: ticketId }]
     };
 
-    const { resources: replies } = await container.items.query(querySpec).fetchAll();
+    const { resources: items } = await container.items
+      .query(querySpec, { partitionKey: ticketId })
+      .fetchAll();
 
     context.res = {
       status: 200,
-      body: replies,
+      body: { replies: items }
     };
   } catch (err) {
-    context.log.error("Error fetching replies:", err.message);
+    context.log("Fetch replies error:", err.message);
     context.res = {
       status: 500,
-      body: "Server error while fetching replies",
+      body: "Failed to fetch replies"
     };
   }
 };
-
 

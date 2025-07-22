@@ -2,46 +2,46 @@ const { CosmosClient } = require("@azure/cosmos");
 
 const endpoint = process.env.COSMOS_DB_ENDPOINT;
 const key = process.env.COSMOS_DB_KEY;
-const databaseId = "TicketsDB";
-const containerId = "Replies"; // Must match your Cosmos DB
-const partitionKeyField = "/ticketId"; // Update to match your container's partitionKey path
-
 const client = new CosmosClient({ endpoint, key });
-const container = client.database(databaseId).container(containerId);
+
+const databaseId = "SupportTickets";
+const containerId = "Replies";
 
 module.exports = async function (context, req) {
+  const { ticketId, from, message } = req.body;
+
+  if (!ticketId || !from || !message) {
+    context.res = {
+      status: 400,
+      body: "Missing ticketId, from, or message"
+    };
+    return;
+  }
+
   try {
-    const { ticketId, email, author, message } = req.body;
+    const container = client.database(databaseId).container(containerId);
 
-    if (!ticketId || !email || !author || !message) {
-      context.res = {
-        status: 400,
-        body: { error: "Missing required fields." },
-      };
-      return;
-    }
-
-    const reply = {
-      id: `${ticketId}-${Date.now()}`, // Unique ID
+    const replyItem = {
+      id: crypto.randomUUID(),
       ticketId,
-      email,
-      author,
+      from,
       message,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
-    await container.items.create(reply, { partitionKey: ticketId });
+    await container.items.create(replyItem, {
+      partitionKey: ticketId
+    });
 
     context.res = {
-      status: 200,
-      body: { message: "Reply saved successfully." },
+      status: 201,
+      body: { message: "Reply added" }
     };
   } catch (err) {
-    context.log("Error in reply-ticket:", err.message);
+    context.log("Reply error:", err.message);
     context.res = {
       status: 500,
-      body: { error: "Failed to save reply." },
+      body: "Failed to add reply"
     };
   }
 };
-

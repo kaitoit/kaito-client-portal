@@ -16,12 +16,15 @@ import Layout from "./Layout";
 
 const theme = createTheme({
   palette: {
-    mode: "light",
-    primary: { main: "#1976d2" },
-    secondary: { main: "#9c27b0" },
+    mode: "dark",
+    background: {
+      default: "transparent",    // page bg transparent for video
+    },
+    primary: { main: "#3a86ff" },
+    secondary: { main: "#06d6a0" },
   },
   typography: {
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
 });
 
@@ -29,6 +32,7 @@ export default function App() {
   const { accounts, inProgress } = useMsal();
   const isAuthenticated = accounts && accounts.length > 0;
 
+  // MSAL is doing its startup/redirect dance
   if (inProgress !== "none") {
     return (
       <Box
@@ -38,19 +42,21 @@ export default function App() {
           alignItems: "center",
           justifyContent: "center",
           typography: "h6",
+          color: "#fff",
         }}
       >
-        Loading...
+        Loading…
       </Box>
     );
   }
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <CssBaseline /> {/* makes the body transparent */}
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+
           <Route
             path="/"
             element={
@@ -63,6 +69,7 @@ export default function App() {
               )
             }
           />
+
           <Route
             path="/submit"
             element={
@@ -75,6 +82,7 @@ export default function App() {
               )
             }
           />
+
           <Route
             path="/ticket/:id"
             element={
@@ -87,6 +95,7 @@ export default function App() {
               )
             }
           />
+
           <Route
             path="*"
             element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
