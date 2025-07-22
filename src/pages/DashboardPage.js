@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   const handleChatSubmit = async () => {
     try {
-      const res = await fetch("/api/gpt-chat", {
+      const res = await fetch("/api/chat-assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: chatInput }),
