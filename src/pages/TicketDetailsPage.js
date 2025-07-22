@@ -26,16 +26,17 @@ export default function TicketDetailsPage() {
           `/api/get-ticket?id=${ticketId}&email=${encodeURIComponent(userEmail)}`
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`);
+        if (response.ok) {
+          const data = await response.json();
+          setTicket(data);
+        } else {
+          const errorText = await response.text();
+          console.error(`Error ${response.status}: ${errorText}`);
         }
-
-        const data = await response.json();
-        setTicket(data);
       } catch (error) {
         console.error("Error fetching ticket:", error.message);
       } finally {
-        setLoading(false);
+        setLoading(false); // ✅ Important: Stop loading regardless of outcome
       }
     };
 
@@ -70,6 +71,7 @@ export default function TicketDetailsPage() {
         p: 3,
         border: "1px solid rgba(255, 255, 255, 0.2)",
         color: "#fff",
+        mt: 4,
       }}
     >
       <Typography variant="h5" gutterBottom>
