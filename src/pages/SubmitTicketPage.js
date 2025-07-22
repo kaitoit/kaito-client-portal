@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardContent,
+  MenuItem,
 } from "@mui/material";
 
 export default function SubmitTicketPage() {
@@ -17,6 +18,8 @@ export default function SubmitTicketPage() {
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
+  const [component, setComponent] = useState("");
+  const [priority, setPriority] = useState("Medium");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
 
@@ -31,7 +34,8 @@ export default function SubmitTicketPage() {
           email: userEmail,
           subject,
           description,
-          // you can add component, priority here if needed
+          component,
+          priority,
         }),
       });
 
@@ -43,6 +47,8 @@ export default function SubmitTicketPage() {
       setSubmitted(true);
       setSubject("");
       setDescription("");
+      setComponent("");
+      setPriority("Medium");
     } catch (err) {
       setError(err.message);
     }
@@ -68,44 +74,60 @@ export default function SubmitTicketPage() {
         <CardContent>
           <TextField
             fullWidth
+            label="Name"
+            variant="outlined"
+            value={userName}
+            disabled
+            sx={textFieldStyle}
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            variant="outlined"
+            value={userEmail}
+            disabled
+            sx={textFieldStyle}
+          />
+          <TextField
+            fullWidth
             label="Subject"
             variant="outlined"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            sx={{
-              mb: 3,
-              "& .MuiInputBase-root": {
-                color: "#fff",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#888",
-              },
-              "& .MuiInputLabel-root": {
-                color: "#ccc",
-              },
-            }}
+            sx={textFieldStyle}
           />
           <TextField
             fullWidth
             multiline
-            rows={5}
+            rows={4}
             label="Description"
             variant="outlined"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            sx={{
-              mb: 3,
-              "& .MuiInputBase-root": {
-                color: "#fff",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#888",
-              },
-              "& .MuiInputLabel-root": {
-                color: "#ccc",
-              },
-            }}
+            sx={textFieldStyle}
           />
+          <TextField
+            fullWidth
+            label="Component"
+            variant="outlined"
+            value={component}
+            onChange={(e) => setComponent(e.target.value)}
+            sx={textFieldStyle}
+          />
+          <TextField
+            fullWidth
+            select
+            label="Priority"
+            variant="outlined"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            sx={textFieldStyle}
+          >
+            <MenuItem value="Low">Low</MenuItem>
+            <MenuItem value="Medium">Medium</MenuItem>
+            <MenuItem value="High">High</MenuItem>
+            <MenuItem value="Critical">Critical</MenuItem>
+          </TextField>
 
           {error && (
             <Typography sx={{ color: "#f87171", mb: 2 }}>{error}</Typography>
@@ -130,7 +152,7 @@ export default function SubmitTicketPage() {
                 px: 3,
                 py: 1,
                 textTransform: "none",
-                boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
+                mt: 2,
               }}
             >
               Submit Ticket
@@ -141,5 +163,18 @@ export default function SubmitTicketPage() {
     </Box>
   );
 }
+
+const textFieldStyle = {
+  mb: 3,
+  "& .MuiInputBase-root": {
+    color: "#fff",
+  },
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#888",
+  },
+  "& .MuiInputLabel-root": {
+    color: "#ccc",
+  },
+};
 
 
