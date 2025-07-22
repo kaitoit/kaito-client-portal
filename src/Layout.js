@@ -2,11 +2,10 @@
 import React from "react";
 import { useMsal } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
-
 import { AppBar, Toolbar, Typography, Box, Button, Avatar } from "@mui/material";
 
-import bgVideo from "./assets/trees.mp4"; // Adjust path if needed
-import logo from "./assets/logo512.png";  // Adjust if needed
+import bgVideo from "./assets/trees.mp4";
+import logo from "./assets/logo512.png";
 
 export default function Layout({ children }) {
   const { instance, accounts } = useMsal();
@@ -24,7 +23,7 @@ export default function Layout({ children }) {
 
   return (
     <>
-      {/* Video background */}
+      {/* Video Background */}
       <video
         autoPlay
         muted
@@ -36,14 +35,22 @@ export default function Layout({ children }) {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          zIndex: -1,
+          zIndex: -2,
         }}
       >
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* AppBar Header */}
-      <AppBar position="static" color="primary" enableColorOnDark>
+      {/* Glassmorphic Header */}
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
+        }}
+      >
         <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Avatar
             src={logo}
@@ -55,7 +62,7 @@ export default function Layout({ children }) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, cursor: "pointer", userSelect: "none" }}
+            sx={{ flexGrow: 1, cursor: "pointer", userSelect: "none", color: "#fff" }}
             onClick={handleDashboard}
           >
             Kaito IT Portal
@@ -73,6 +80,14 @@ export default function Layout({ children }) {
               color="inherit"
               onClick={handleLogout}
               size="small"
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.6)",
+                color: "#fff",
+                "&:hover": {
+                  borderColor: "#fff",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                },
+              }}
             >
               Logout
             </Button>
@@ -80,17 +95,19 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Main content container */}
+      {/* Glassmorphic Content Container */}
       <Box
         component="main"
         sx={{
-          maxWidth: 960,
+          maxWidth: "960px",
           margin: "2rem auto",
-          padding: 2,
-          backgroundColor: "rgba(255, 255, 255, 0.85)",
-          borderRadius: 2,
-          boxShadow: 3,
-          minHeight: "calc(100vh - 80px)",
+          padding: "2rem",
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderRadius: 3,
+          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
           position: "relative",
           zIndex: 1,
         }}

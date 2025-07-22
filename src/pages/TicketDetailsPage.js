@@ -39,17 +39,20 @@ export default function TicketDetailsPage() {
   if (error) return <Typography sx={{ color: "#f87171", p: 2 }}>{error}</Typography>;
 
   return (
-    <Box sx={{ p: 4, color: "#fff" }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+    <Box sx={{ p: 2, color: "#fff" }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#fff" }}>
         Ticket Details
       </Typography>
 
       <Card
         sx={{
           backgroundColor: "rgba(255, 255, 255, 0.08)",
+          backdropFilter: "blur(10px)",
           border: "1px solid rgba(255, 255, 255, 0.2)",
           color: "#fff",
           mb: 4,
+          borderRadius: 3,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
         }}
       >
         <CardContent>
@@ -65,10 +68,11 @@ export default function TicketDetailsPage() {
             <strong>Description:</strong>
             <Box
               sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
                 borderRadius: 2,
                 p: 2,
                 mt: 1,
+                backdropFilter: "blur(6px)",
               }}
             >
               {ticket.description}
@@ -115,6 +119,7 @@ export default function TicketDetailsPage() {
           px: 3,
           py: 1,
           textTransform: "none",
+          boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
         }}
       >
         ← Back to Dashboard
@@ -122,5 +127,6 @@ export default function TicketDetailsPage() {
     </Box>
   );
 }
+
 
 
