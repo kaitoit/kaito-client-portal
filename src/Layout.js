@@ -12,7 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home"; // ← makes sure this path is correct
+import HomeIcon from "@mui/icons-material/Home";
 
 import bgVideo from "./assets/trees.mp4";
 import logo from "./assets/logo512.png";
@@ -26,14 +26,13 @@ export default function Layout({ children }) {
   // show the home icon on every path except the dashboard
   const showBackButton = location.pathname !== "/";
 
-  // debug logging
+  // debug logging, only depend on pathname
   useEffect(() => {
     console.log("Current path:", location.pathname, "showBackButton=", showBackButton);
-  }, [location]);
+  }, [location.pathname]);  // <-- no more ESLint warning
 
   return (
     <>
-      {/* Full‐screen background video */}
       <video
         autoPlay
         muted
@@ -51,7 +50,6 @@ export default function Layout({ children }) {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* Fixed, solid‐black header */}
       <AppBar
         position="fixed"
         sx={{
@@ -108,7 +106,6 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Main content container, pushed below the 64px header */}
       <Box
         component="main"
         sx={{
@@ -130,5 +127,6 @@ export default function Layout({ children }) {
     </>
   );
 }
+
 
 
