@@ -12,7 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home"; // <-- make sure this matches
+import HomeIcon from "@mui/icons-material/Home"; // ← makes sure this path is correct
 
 import bgVideo from "./assets/trees.mp4";
 import logo from "./assets/logo512.png";
@@ -23,16 +23,17 @@ export default function Layout({ children }) {
   const location = useLocation();
   const username = accounts[0]?.username || "User";
 
-  // Show the back‑to‑dashboard icon on every route except "/"  
+  // show the home icon on every path except the dashboard
   const showBackButton = location.pathname !== "/";
-  // DEBUG
+
+  // debug logging
   useEffect(() => {
-    console.log("Layout: current path =", location.pathname, "showBackButton =", showBackButton);
-  }, [location, showBackButton]);
+    console.log("Current path:", location.pathname, "showBackButton=", showBackButton);
+  }, [location]);
 
   return (
     <>
-      {/* Full‑screen background video */}
+      {/* Full‐screen background video */}
       <video
         autoPlay
         muted
@@ -50,7 +51,7 @@ export default function Layout({ children }) {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* Fixed header */}
+      {/* Fixed, solid‐black header */}
       <AppBar
         position="fixed"
         sx={{
@@ -60,29 +61,26 @@ export default function Layout({ children }) {
         }}
       >
         <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {/* Back to Dashboard button */}
           {showBackButton && (
             <Tooltip title="Back to Dashboard">
               <IconButton
                 onClick={() => navigate("/")}
                 color="inherit"
-                sx={{ color: "#fff" }}  /* force white */
+                sx={{ color: "#fff" }}
               >
-                <HomeIcon fontSize="medium" sx={{ color: "#fff" }} />
+                <HomeIcon sx={{ color: "#fff" }} />
               </IconButton>
             </Tooltip>
           )}
 
-          {/* Logo */}
           <Avatar
             src={logo}
-            alt="Kaito IT Logo"
+            alt="Kaito IT"
             onClick={() => navigate("/")}
             sx={{ cursor: "pointer", width: 40, height: 40 }}
             variant="rounded"
           />
 
-          {/* Title */}
           <Typography
             variant="h6"
             onClick={() => navigate("/")}
@@ -91,12 +89,10 @@ export default function Layout({ children }) {
             Kaito IT Portal
           </Typography>
 
-          {/* User name */}
           <Typography variant="body2" sx={{ color: "#ccc" }}>
             {username}
           </Typography>
 
-          {/* Logout */}
           <Button
             variant="outlined"
             color="inherit"
@@ -112,17 +108,17 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Main content: push down by header height */}
+      {/* Main content container, pushed below the 64px header */}
       <Box
         component="main"
         sx={{
-          pt: "64px",               /* header height */
+          pt: "64px",
           backgroundColor: "#111",
           borderRadius: 3,
           border: "1px solid rgba(255,255,255,0.2)",
           p: 3,
           color: "#fff",
-          minHeight: "calc(100vh - 64px - 32px)", /* subtract header + margins */
+          minHeight: "calc(100vh - 64px - 32px)",
           m: "2rem auto",
           maxWidth: 960,
           position: "relative",
