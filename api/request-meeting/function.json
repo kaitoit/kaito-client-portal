@@ -1,11 +1,13 @@
+// api/request-meeting/function.json
 {
   "bindings": [
     {
-      "authLevel": "function",
+      "authLevel": "anonymous",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["post"]
+      "methods": ["post"],
+      "route": "request-meeting"
     },
     {
       "type": "http",
