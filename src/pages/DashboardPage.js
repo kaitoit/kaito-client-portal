@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useNavigate, Link } from "react-router-dom";
+import MeetingRequest from "../components/MeetingRequest";
 import {
   Box,
   Typography,
@@ -15,7 +16,6 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
-
 
 export default function DashboardPage() {
   const isAuthenticated = useIsAuthenticated();
@@ -31,23 +31,23 @@ export default function DashboardPage() {
   const [tickets, setTickets] = useState([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
 
-  // Chat assistant state (just like TicketDetailsPage)
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
 
-  // Load tickets
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
       return;
     }
+
     (async () => {
       setLoadingTickets(true);
       try {
         const res = await fetch("/api/get-tickets");
         if (res.ok) {
-          setTickets(await res.json());
+          const data = await res.json();
+          setTickets(data);
         } else {
           console.error("Failed to fetch tickets");
         }
@@ -59,12 +59,12 @@ export default function DashboardPage() {
     })();
   }, [isAuthenticated, navigate]);
 
-  // Chat assistant submit handler
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
+
     const userMsg = chatInput.trim();
-    setChatHistory((h) => [...h, { role: "user", content: userMsg }]);
+    setChatHistory((prev) => [...prev, { role: "user", content: userMsg }]);
     setChatInput("");
     setChatLoading(true);
 
@@ -74,12 +74,12 @@ export default function DashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg }),
       });
-      const data = await res.json().catch(() => null);
+      const data = await res.json();
       const botReply = data?.reply || "Sorry, something went wrong.";
-      setChatHistory((h) => [...h, { role: "assistant", content: botReply }]);
+      setChatHistory((prev) => [...prev, { role: "assistant", content: botReply }]);
     } catch (err) {
       console.error("Chat error:", err);
-      setChatHistory((h) => [...h, { role: "assistant", content: "Network error." }]);
+      setChatHistory((prev) => [...prev, { role: "assistant", content: "Network error." }]);
     } finally {
       setChatLoading(false);
     }
@@ -88,11 +88,12 @@ export default function DashboardPage() {
   const hasIssue = services.some((s) => s.status !== "OK");
 
   return (
-    <Box>
-      {/* System Status */}
+    <Box sx={{ p: 4 }}>
+      {/* Title */}
       <Typography variant="h4" gutterBottom sx={{ color: "#fff", fontWeight: "bold" }}>
         Kaito IT System Dashboard
       </Typography>
+
       <Typography sx={{ mb: 2 }}>
         {hasIssue ? (
           <span style={{ color: "orange", fontWeight: "bold" }}>
@@ -105,6 +106,7 @@ export default function DashboardPage() {
         )}
       </Typography>
 
+      {/* Service Status Overview */}
       <Paper
         elevation={3}
         sx={{
@@ -123,11 +125,7 @@ export default function DashboardPage() {
           {services.map((svc, i) => (
             <ListItem
               key={i}
-              sx={{
-                backgroundColor: "#1c1c1c",
-                mb: 1,
-                borderRadius: 1,
-              }}
+              sx={{ backgroundColor: "#1c1c1c", mb: 1, borderRadius: 1 }}
             >
               <Box sx={{ flexGrow: 1 }}>
                 <Typography sx={{ fontWeight: "bold" }}>{svc.name}</Typography>
@@ -149,7 +147,21 @@ export default function DashboardPage() {
         </List>
       </Paper>
 
-      {/* Submitted Tickets */}
+      {/* Meeting Request */}
+      <Paper
+        elevation={3}
+        sx={{
+          backgroundColor: "#111",
+          borderRadius: 3,
+          p: 3,
+          mb: 4,
+          color: "#fff",
+        }}
+      >
+        <MeetingRequest />
+      </Paper>
+
+      {/* Submitted Support Tickets */}
       <Paper
         elevation={3}
         sx={{
@@ -174,11 +186,7 @@ export default function DashboardPage() {
             {tickets.map((t) => (
               <ListItem
                 key={t.id}
-                sx={{
-                  backgroundColor: "#1e1e1e",
-                  mb: 1,
-                  borderRadius: 1,
-                }}
+                sx={{ backgroundColor: "#1e1e1e", mb: 1, borderRadius: 1 }}
                 secondaryAction={
                   <Button
                     component={Link}
@@ -202,7 +210,7 @@ export default function DashboardPage() {
         )}
       </Paper>
 
-      {/* GPT Chat Assistant (same look as TicketDetailsPage) */}
+      {/* Chat Assistant */}
       <Paper
         elevation={3}
         sx={{
@@ -212,14 +220,15 @@ export default function DashboardPage() {
           color: "#fff",
         }}
       >
-     <Typography variant="h6" gutterBottom>
-    Kaito IT Chat Assistant  <Typography
-    variant="caption"
-    sx={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)' }}
-  >
-    Powered by OpenAI
-  </Typography>
-  </Typography>
+        <Typography variant="h6" gutterBottom>
+          Kaito IT Chat Assistant{" "}
+          <Typography
+            variant="caption"
+            sx={{ fontStyle: "italic", color: "rgba(255,255,255,0.6)" }}
+          >
+            Powered by OpenAI
+          </Typography>
+        </Typography>
         <Box
           sx={{
             backgroundColor: "#1a1a1a",
@@ -274,6 +283,7 @@ export default function DashboardPage() {
         </Stack>
       </Paper>
 
+      {/* Footer */}
       <Box sx={{ textAlign: "center", mt: 4 }}>
         <Typography variant="caption" color="#aaa">
           © 2025 Kaito IT
@@ -282,6 +292,5 @@ export default function DashboardPage() {
     </Box>
   );
 }
-
 
 
