@@ -66,7 +66,6 @@ module.exports = async function (context, req) {
     };
 
     await container.items.create(newRequest);
-
     await notifyTeams(newRequest);
 
     context.res = {
@@ -74,11 +73,12 @@ module.exports = async function (context, req) {
       body: { message: "Meeting request submitted successfully." },
     };
   } catch (err) {
-    context.log.error("Error submitting meeting request:", err);
+    context.log.error("Error submitting meeting request:", err.message);
     context.res = {
       status: 500,
       body: { error: "Failed to submit meeting request." },
     };
   }
 };
+
 
