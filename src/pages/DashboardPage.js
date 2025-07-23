@@ -15,7 +15,7 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home"; // if you want a home icon elsewhere
+
 
 export default function DashboardPage() {
   const isAuthenticated = useIsAuthenticated();
