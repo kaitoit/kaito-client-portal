@@ -13,6 +13,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Stack,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -22,14 +23,20 @@ export default function TicketDetailsPage() {
   const { accounts } = useMsal();
   const userEmail = accounts?.[0]?.username || "";
 
+  // Ticket state
   const [ticket, setTicket] = useState(null);
   const [loadingTicket, setLoadingTicket] = useState(true);
 
+  // Replies state
   const [replies, setReplies] = useState([]);
   const [loadingReplies, setLoadingReplies] = useState(true);
-
   const [replyMessage, setReplyMessage] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  // Chat assistant state
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   // Fetch ticket
   useEffect(() => {
@@ -67,7 +74,7 @@ export default function TicketDetailsPage() {
     })();
   }, [ticketId]);
 
-  // Send reply
+  // Send a reply
   const handleReply = async () => {
     if (!replyMessage.trim()) return;
     setSendingReply(true);
@@ -83,7 +90,7 @@ export default function TicketDetailsPage() {
       });
       if (!res.ok) throw new Error(await res.text());
       setReplyMessage("");
-      // refresh replies
+      // Refresh replies
       const r2 = await fetch(`/api/get-replies?ticketId=${ticketId}`);
       const d2 = await r2.json();
       setReplies(d2.replies || []);
@@ -91,6 +98,32 @@ export default function TicketDetailsPage() {
       console.error("Error sending reply:", err);
     } finally {
       setSendingReply(false);
+    }
+  };
+
+  // Chat assistant submit
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    const userMsg = chatInput.trim();
+    setChatHistory((h) => [...h, { role: "user", content: userMsg }]);
+    setChatInput("");
+    setChatLoading(true);
+
+    try {
+      const res = await fetch("/api/chat-assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg }),
+      });
+      const data = await res.json().catch(() => null);
+      const botReply = data?.reply || "Sorry, something went wrong.";
+      setChatHistory((h) => [...h, { role: "assistant", content: botReply }]);
+    } catch (err) {
+      console.error("Chat error:", err);
+      setChatHistory((h) => [...h, { role: "assistant", content: "Network error." }]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -113,7 +146,7 @@ export default function TicketDetailsPage() {
 
   return (
     <Box>
-      {/* Return link */}
+      {/* Return to dashboard */}
       <Button
         startIcon={<HomeIcon />}
         onClick={() => navigate("/")}
@@ -133,6 +166,7 @@ export default function TicketDetailsPage() {
           borderRadius: 3,
           p: 3,
           color: "#fff",
+          mb: 4,
         }}
       >
         {/* Ticket Info */}
@@ -196,9 +230,71 @@ export default function TicketDetailsPage() {
           {sendingReply ? "Sending…" : "Send Reply"}
         </Button>
       </Paper>
+
+      {/* Kaito IT Chat Assistant */}
+      <Paper
+        elevation={3}
+        sx={{
+          backgroundColor: "#111",
+          borderRadius: 3,
+          p: 3,
+          color: "#fff",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Kaito IT Chat Assistant
+        </Typography>
+        <Box
+          sx={{
+            backgroundColor: "#1a1a1a",
+            p: 2,
+            borderRadius: 2,
+            height: 200,
+            overflowY: "auto",
+          }}
+        >
+          {chatHistory.map((msg, i) => (
+            <Box key={i} sx={{ mb: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: "bold", color: msg.role === "user" ? "#66aaff" : "#06d6a0" }}
+              >
+                {msg.role === "user" ? "You" : "Assistant"}:
+              </Typography>
+              <Typography variant="body2">{msg.content}</Typography>
+            </Box>
+          ))}
+          {chatLoading && (
+            <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+              Assistant is typing…
+            </Typography>
+          )}
+        </Box>
+
+        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+          <TextField
+            fullWidth
+            placeholder="Ask something..."
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            sx={{
+              backgroundColor: "#222",
+              borderRadius: 1,
+              "& .MuiInputBase-root": { color: "#fff" },
+            }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleChatSubmit}
+            disabled={chatLoading || !chatInput.trim()}
+            sx={{ backgroundColor: "#06d6a0" }}
+          >
+            {chatLoading ? "..." : "Ask"}
+          </Button>
+        </Stack>
+      </Paper>
     </Box>
   );
 }
-
 
 
