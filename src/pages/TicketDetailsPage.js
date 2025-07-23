@@ -241,9 +241,15 @@ export default function TicketDetailsPage() {
           color: "#fff",
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Kaito IT Chat Assistant
-        </Typography>
+   <Typography variant="h6" gutterBottom>
+    Kaito IT Chat Assistant
+  </Typography>
+  <Typography
+    variant="caption"
+    sx={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)' }}
+  >
+    ™ Powered by OpenAI
+  </Typography>
         <Box
           sx={{
             backgroundColor: "#1a1a1a",

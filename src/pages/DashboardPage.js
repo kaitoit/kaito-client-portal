@@ -118,9 +118,15 @@ export default function DashboardPage() {
         mb: 4,
       }}
     >
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Kaito IT System Dashboard
-      </Typography>
+<Typography variant="h6" gutterBottom>
+    Kaito IT Chat Assistant
+  </Typography>
+  <Typography
+    variant="caption"
+    sx={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)' }}
+  >
+    ™ Powered by OpenAI
+  </Typography>
 
       {/* System Status */}
       <Typography variant="h6" gutterBottom>
