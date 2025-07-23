@@ -1,5 +1,5 @@
 // src/Layout.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -12,7 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
+import HomeIcon from "@mui/icons-material/Home"; // <-- make sure this matches
 
 import bgVideo from "./assets/trees.mp4";
 import logo from "./assets/logo512.png";
@@ -23,8 +23,12 @@ export default function Layout({ children }) {
   const location = useLocation();
   const username = accounts[0]?.username || "User";
 
-  // Show the back‑to‑dashboard icon on every route except "/"
+  // Show the back‑to‑dashboard icon on every route except "/"  
   const showBackButton = location.pathname !== "/";
+  // DEBUG
+  useEffect(() => {
+    console.log("Layout: current path =", location.pathname, "showBackButton =", showBackButton);
+  }, [location, showBackButton]);
 
   return (
     <>
@@ -61,9 +65,10 @@ export default function Layout({ children }) {
             <Tooltip title="Back to Dashboard">
               <IconButton
                 onClick={() => navigate("/")}
-                sx={{ color: "#fff" }}
+                color="inherit"
+                sx={{ color: "#fff" }}  /* force white */
               >
-                <HomeIcon />
+                <HomeIcon fontSize="medium" sx={{ color: "#fff" }} />
               </IconButton>
             </Tooltip>
           )}
@@ -107,17 +112,17 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Push content down by header height and wrap in solid panel */}
+      {/* Main content: push down by header height */}
       <Box
         component="main"
         sx={{
-          pt: "64px",               // height of AppBar
+          pt: "64px",               /* header height */
           backgroundColor: "#111",
           borderRadius: 3,
           border: "1px solid rgba(255,255,255,0.2)",
           p: 3,
           color: "#fff",
-          minHeight: "calc(100vh - 64px - 32px)", // account for pt + margins
+          minHeight: "calc(100vh - 64px - 32px)", /* subtract header + margins */
           m: "2rem auto",
           maxWidth: 960,
           position: "relative",
