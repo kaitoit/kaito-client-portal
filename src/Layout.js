@@ -1,5 +1,5 @@
 // src/Layout.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import { useMsal } from "@azure/msal-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -23,16 +23,12 @@ export default function Layout({ children }) {
   const location = useLocation();
   const username = accounts[0]?.username || "User";
 
-  // show the home icon on every path except the dashboard
+  // Show the home icon on every path except the dashboard
   const showBackButton = location.pathname !== "/";
-
-  // debug logging, only depend on pathname
-  useEffect(() => {
-    console.log("Current path:", location.pathname, "showBackButton=", showBackButton);
-  }, [location.pathname]);  // <-- no more ESLint warning
 
   return (
     <>
+      {/* Full-screen background video */}
       <video
         autoPlay
         muted
@@ -50,6 +46,7 @@ export default function Layout({ children }) {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
+      {/* Fixed, solid-black header */}
       <AppBar
         position="fixed"
         sx={{
@@ -106,6 +103,7 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
+      {/* Main content container, pushed below the 64px header */}
       <Box
         component="main"
         sx={{
@@ -127,6 +125,5 @@ export default function Layout({ children }) {
     </>
   );
 }
-
 
 
