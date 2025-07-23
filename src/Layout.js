@@ -30,14 +30,13 @@ export default function Layout({ children }) {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      <AppBar
-        position="static"
-        sx={{
-          backgroundColor: "rgba(0, 0, 0, 0.4)",
-          backdropFilter: "blur(10px)",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
-          zIndex: 1,
-        }}
+     <AppBar
+       position="static"
+       sx={{
+         backgroundColor: "#111",      // ← solid black
+         boxShadow: "0 2px 10px rgba(0,0,0,0.6)",
+         zIndex: 1,
+       }}
       >
         <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Avatar
