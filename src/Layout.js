@@ -1,7 +1,7 @@
 // src/Layout.jsx
 import React from "react";
 import { useMsal } from "@azure/msal-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -9,10 +9,7 @@ import {
   Box,
   Button,
   Avatar,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
 
 import bgVideo from "./assets/trees.mp4";
 import logo from "./assets/logo512.png";
@@ -20,15 +17,11 @@ import logo from "./assets/logo512.png";
 export default function Layout({ children }) {
   const { instance, accounts } = useMsal();
   const navigate = useNavigate();
-  const location = useLocation();
   const username = accounts[0]?.username || "User";
-
-  // Show the home icon on every path except the dashboard
-  const showBackButton = location.pathname !== "/";
 
   return (
     <>
-      {/* Full-screen background video */}
+      {/* Video background */}
       <video
         autoPlay
         muted
@@ -46,7 +39,7 @@ export default function Layout({ children }) {
         <source src={bgVideo} type="video/mp4" />
       </video>
 
-      {/* Fixed, solid-black header */}
+      {/* Fixed solid‑black header */}
       <AppBar
         position="fixed"
         sx={{
@@ -56,18 +49,6 @@ export default function Layout({ children }) {
         }}
       >
         <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {showBackButton && (
-            <Tooltip title="Back to Dashboard">
-              <IconButton
-                onClick={() => navigate("/")}
-                color="inherit"
-                sx={{ color: "#fff" }}
-              >
-                <HomeIcon sx={{ color: "#fff" }} />
-              </IconButton>
-            </Tooltip>
-          )}
-
           <Avatar
             src={logo}
             alt="Kaito IT"
@@ -103,11 +84,11 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Main content container, pushed below the 64px header */}
+      {/* Main content container, pushed below header */}
       <Box
         component="main"
         sx={{
-          pt: "64px",
+          pt: "64px", // header height
           backgroundColor: "#111",
           borderRadius: 3,
           border: "1px solid rgba(255,255,255,0.2)",
@@ -125,5 +106,7 @@ export default function Layout({ children }) {
     </>
   );
 }
+
+
 
 
