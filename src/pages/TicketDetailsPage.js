@@ -234,7 +234,7 @@ export default function TicketDetailsPage() {
       </Paper>
 
       {/* Kaito IT Chat Assistant */}
-      <Paper
+           <Paper
         elevation={3}
         sx={{
           backgroundColor: "#111",
@@ -243,8 +243,14 @@ export default function TicketDetailsPage() {
           color: "#fff",
         }}
       >
-
-
+     <Typography variant="h6" gutterBottom>
+    Kaito IT Chat Assistant  <Typography
+    variant="caption"
+    sx={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)' }}
+  >
+    Powered by OpenAI
+  </Typography>
+  </Typography>
         <Box
           sx={{
             backgroundColor: "#1a1a1a",
@@ -252,13 +258,17 @@ export default function TicketDetailsPage() {
             borderRadius: 2,
             height: 200,
             overflowY: "auto",
+            mb: 2,
           }}
         >
           {chatHistory.map((msg, i) => (
             <Box key={i} sx={{ mb: 1 }}>
               <Typography
                 variant="body2"
-                sx={{ fontWeight: "bold", color: msg.role === "user" ? "#66aaff" : "#06d6a0" }}
+                sx={{
+                  fontWeight: "bold",
+                  color: msg.role === "user" ? "#66aaff" : "#06d6a0",
+                }}
               >
                 {msg.role === "user" ? "You" : "Assistant"}:
               </Typography>
@@ -272,7 +282,7 @@ export default function TicketDetailsPage() {
           )}
         </Box>
 
-        <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+        <Stack direction="row" spacing={1}>
           <TextField
             fullWidth
             placeholder="Ask something..."
@@ -290,7 +300,7 @@ export default function TicketDetailsPage() {
             disabled={chatLoading || !chatInput.trim()}
             sx={{ backgroundColor: "#06d6a0" }}
           >
-            {chatLoading ? "..." : "Ask"}
+            {chatLoading ? "…" : "Ask"}
           </Button>
         </Stack>
       </Paper>
