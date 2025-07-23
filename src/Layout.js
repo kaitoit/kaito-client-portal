@@ -23,12 +23,12 @@ export default function Layout({ children }) {
   const location = useLocation();
   const username = accounts[0]?.username || "User";
 
-  // Determine if we should show the “back” button
+  // Show the back‑to‑dashboard icon on every route except "/"
   const showBackButton = location.pathname !== "/";
 
   return (
     <>
-      {/* Video background */}
+      {/* Full‑screen background video */}
       <video
         autoPlay
         muted
@@ -48,22 +48,20 @@ export default function Layout({ children }) {
 
       {/* Fixed header */}
       <AppBar
-        position="fixed"                       /* make it stick */
+        position="fixed"
         sx={{
-          backgroundColor: "#111",             /* solid black */
+          backgroundColor: "#111",
           boxShadow: "0 2px 10px rgba(0,0,0,0.6)",
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
-        <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          
-          {/* Optional “Back to Dashboard” button */}
+        <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {/* Back to Dashboard button */}
           {showBackButton && (
             <Tooltip title="Back to Dashboard">
               <IconButton
-                color="inherit"
                 onClick={() => navigate("/")}
-                sx={{ mr: 1 }}
+                sx={{ color: "#fff" }}
               >
                 <HomeIcon />
               </IconButton>
@@ -88,7 +86,7 @@ export default function Layout({ children }) {
             Kaito IT Portal
           </Typography>
 
-          {/* Username */}
+          {/* User name */}
           <Typography variant="body2" sx={{ color: "#ccc" }}>
             {username}
           </Typography>
@@ -109,21 +107,21 @@ export default function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Main content: push down by header height */}
+      {/* Push content down by header height and wrap in solid panel */}
       <Box
         component="main"
         sx={{
+          pt: "64px",               // height of AppBar
           backgroundColor: "#111",
           borderRadius: 3,
           border: "1px solid rgba(255,255,255,0.2)",
-          padding: 3,
+          p: 3,
           color: "#fff",
-          minHeight: "calc(100vh - 80px)",
-          margin: "2rem auto",
+          minHeight: "calc(100vh - 64px - 32px)", // account for pt + margins
+          m: "2rem auto",
           maxWidth: 960,
           position: "relative",
           zIndex: 1,
-          pt: "80px",              /* space for fixed header */
         }}
       >
         {children}
@@ -131,4 +129,5 @@ export default function Layout({ children }) {
     </>
   );
 }
+
 
